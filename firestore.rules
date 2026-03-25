@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: userId (UID)
+    // Fields:
+    //   - uid: string (required) - Firebase Auth UID
+    //   - email: string (required) - User email
+    //   - displayName: string (optional) - User display name
+    //   - isApproved: boolean (required) - Whether the user is approved by admin
+    //   - createdAt: timestamp (optional) - Account creation time
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin" ||
+              (request.auth.token.email == "aahdan298@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'isApproved', 'role']) &&
+             data.uid is string &&
+             data.email is string &&
+             data.isApproved is bool &&
+             data.role in ['admin', 'user'];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      // Users can read their own profile, admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Users can create their own profile, but isApproved must be false and role must be 'user' (unless primary admin)
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && 
+                    (
+                      (request.resource.data.isApproved == false && request.resource.data.role == 'user') || 
+                      (request.auth.token.email == "aahdan298@gmail.com")
+                    );
+      
+      // Only admin can update approval status and roles
+      // Users can update their own profile but NOT isApproved or role
+      allow update: if isAdmin() || 
+                    (isOwner(userId) && 
+                     request.resource.data.isApproved == resource.data.isApproved &&
+                     request.resource.data.role == resource.data.role);
+    }
+  }
+}
