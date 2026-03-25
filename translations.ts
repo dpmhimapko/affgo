@@ -13,6 +13,7 @@ export const translations: Translations = {
   },
   sidebar: {
     home: "Beranda",
+    history: "Riwayat",
     virtualTryOn: "Go TryOn",
     productStudio: "Go Product",
     goModel: "Go Model",
@@ -35,7 +36,6 @@ export const translations: Translations = {
     adCreator: "Go Poster",
     mockupGenerator: "Go Mockup",
     goPhotoshoot: "Go Photoshoot",
-    goVideo: "Go Video",
     goStoryboard: "Go Storyboard",
     goVoice: "Go Voice",
     motionPromptStudio: "Go Motion Prompt",
@@ -1044,6 +1044,17 @@ export const translations: Translations = {
       luxuriousHall: "Gedung Mewah",
       aestheticRoom: "Ruangan Estetik (Teal & Fur)"
     }
+  },
+  history: {
+    title: "Riwayat Generate",
+    description: "Lihat kembali semua gambar yang pernah Anda buat sebelumnya.",
+    loading: "Memuat Riwayat...",
+    empty: {
+      title: "Belum Ada Riwayat",
+      subtitle: "Mulai buat gambar untuk melihatnya di sini!"
+    },
+    deleteConfirm: "Hapus item ini dari riwayat?",
+    deleteButton: "Hapus"
   },
   goModelVip: {
     page: {

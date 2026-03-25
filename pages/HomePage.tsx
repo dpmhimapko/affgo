@@ -54,7 +54,7 @@ export const HomePage: React.FC = () => {
                     <ul className="space-y-6">
                         <li className="flex items-start gap-4 text-sm md:text-base text-slate-600 dark:text-slate-300 font-bold">
                             <div className="mt-1.5 w-3 h-3 bg-cartoon-blue rounded-full flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
-                            <span>Aplikasi ini bikinan <strong className="text-cartoon-blue uppercase italic">Ardra</strong>. Jadi jangan diaku-akuin ya, hargain karya orang cuy!</span>
+                            <span>Aplikasi ini bikinan <strong className="text-cartoon-blue uppercase italic">Ahdan</strong>. Jadi jangan diaku-akuin ya, hargain karya orang cuy!</span>
                         </li>
                         <li className="flex items-start gap-4 text-sm md:text-base text-slate-600 dark:text-slate-300 font-bold">
                             <div className="mt-1.5 w-3 h-3 bg-cartoon-blue rounded-full flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>

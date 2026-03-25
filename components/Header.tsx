@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                 <span className="text-2xl font-black tracking-tighter text-cartoon-dark leading-none italic uppercase">
                   AFFILIATE <span className="text-cartoon-blue">GO</span>
                 </span>
-                <span className="text-[10px] font-black uppercase text-cartoon-blue/60 tracking-widest leading-none mt-1">by Ardra</span>
+                <span className="text-[10px] font-black uppercase text-cartoon-blue/60 tracking-widest leading-none mt-1">by Ahdan</span>
               </div>
             </div>
           </div>
@@ -73,22 +73,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
             <div className="hidden sm:flex items-center gap-4">
               <div className="px-4 py-1.5 bg-cartoon-yellow border-2 border-cartoon-dark rounded-full shadow-cartoon transform -rotate-1 hidden lg:block">
-                 <span className="text-xs font-black uppercase italic">Ardra's Studio Edition</span>
-              </div>
-              
-              <div 
-                  className="flex items-center gap-2 p-1 pr-3 bg-white border-2 border-cartoon-dark rounded-full shadow-cartoon transform rotate-1"
-                  title={`Penggunaan sesi ini: ${sessionUsage} dari ${SESSION_LIMIT} batas demo.`}
-              >
-                <div className="w-20 h-4 bg-slate-100 rounded-full overflow-hidden border-2 border-cartoon-dark">
-                  <div 
-                    className={`h-full transition-all duration-500 ${usagePercentage > 80 ? 'bg-red-500' : usagePercentage > 50 ? 'bg-yellow-400' : 'bg-green-400'}`}
-                    style={{ width: `${usagePercentage}%`}}
-                  ></div>
-                </div>
-                <span className="text-xs font-black uppercase text-slate-500">
-                  {sessionUsage} / {SESSION_LIMIT}
-                </span>
+                 <span className="text-xs font-black uppercase italic">Ahdan's Studio Edition</span>
               </div>
             </div>
           </div>

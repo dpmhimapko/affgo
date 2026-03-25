@@ -11,6 +11,7 @@ import { StepHeader } from '../components/StepHeader';
 import { PromoCard } from '../components/PromoCard';
 import { ZoomModal } from '../components/ZoomModal';
 import { Download as DownloadIcon, Eye as ZoomIcon, RefreshCw, User, ShoppingBag, Info } from '../components/icons/LucideIcons';
+import { auth, saveToHistory } from '../firebase';
 
 export const VirtualTryOn: React.FC = () => {
     const { t } = useLanguage();
@@ -72,6 +73,15 @@ export const VirtualTryOn: React.FC = () => {
                 aspectRatio
             );
             setResultImage(result.imageUrl);
+            
+            // Save to history
+            if (auth.currentUser) {
+                await saveToHistory(auth.currentUser.uid, {
+                    imageUrl: result.imageUrl,
+                    type: "Go Try-On",
+                    prompt: "Virtual Try-On Fusion"
+                });
+            }
         } catch (e: any) {
             console.error(e);
             setError(e.message || "An unexpected error occurred.");

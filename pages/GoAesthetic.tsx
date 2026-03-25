@@ -10,6 +10,7 @@ import { generateSinglePhotoshootImage } from '../services/geminiService';
 import { Download as DownloadIcon, Eye as ZoomIcon, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, RefreshCw, Clock, Image as ImageIcon, Camera as CameraIcon } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
+import { auth, saveToHistory } from '../firebase';
 
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
 type Angle = 'eye-level' | 'high-angle' | 'close-up' | 'dutch-angle' | 'detail';
@@ -110,6 +111,15 @@ export const GoAesthetic: React.FC = () => {
                     next[i] = { id: i, status: 'done', imageUrl: res.imageUrl };
                     return next;
                 });
+
+                // Save to history
+                if (auth.currentUser && res.imageUrl) {
+                    await saveToHistory(auth.currentUser.uid, {
+                        imageUrl: res.imageUrl,
+                        type: "Go Aesthetic",
+                        prompt: `Aesthetic Photoshoot - ${angle} angle`
+                    });
+                }
             } catch (err: any) {
                 console.error(`Error slot ${i}:`, err);
                 setResults(prev => {

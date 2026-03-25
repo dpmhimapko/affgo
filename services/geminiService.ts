@@ -297,6 +297,24 @@ export const generateVideo = async (prompt: string, image: ImageData) => {
     return operation.response?.generatedVideos?.[0]?.video?.uri;
 };
 
+export const generateTextToVideo = async (prompt: string) => {
+    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+    let operation = await ai.models.generateVideos({
+        model: 'veo-3.1-fast-generate-preview',
+        prompt: prompt,
+        config: {
+            numberOfVideos: 1,
+            resolution: '720p',
+            aspectRatio: '16:9'
+        }
+    });
+    while (!operation.done) {
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        operation = await ai.operations.getVideosOperation({ operation: operation });
+    }
+    return operation.response?.generatedVideos?.[0]?.video?.uri;
+};
+
 export const suggestMotionPrompt = async (image: ImageData) => {
     const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
     const response = await ai.models.generateContent({

@@ -13,6 +13,7 @@ import GoCermin from './pages/GoCermin';
 import GoClean from './pages/GoClean';
 import { GoSelfieVip } from './pages/GoSelfieVip';
 import { GoSetup } from './pages/GoSetup';
+import { History } from './pages/History';
 import { FeatureGuide } from './pages/FeatureGuide';
 import { AdminDashboard } from './pages/AdminDashboard';
 import Settings from './pages/Settings';
@@ -24,7 +25,7 @@ import { useApiKey } from './hooks/useApiKey';
 import { AlertTriangle as AlertCircle, X } from './components/icons/LucideIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKids' | 'goFamily' | 'goModelVip' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'adminDashboard' | 'settings';
+export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKids' | 'goFamily' | 'goModelVip' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'adminDashboard' | 'settings' | 'history';
 
 function AppContent() {
   const { t } = useLanguage();
@@ -93,6 +94,7 @@ function AppContent() {
         case 'goSetup': return <GoSetup />;
         case 'adminDashboard': return <AdminDashboard />;
         case 'settings': return <Settings />;
+        case 'history': return <History />;
         default: return <HomePage />;
       }
   };

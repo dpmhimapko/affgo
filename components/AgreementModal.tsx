@@ -92,7 +92,7 @@ const AgreementModal: React.FC<AgreementModalProps> = ({ onAgree }) => {
                                 <ul className="space-y-4">
                                     <li className="flex items-start gap-4 text-sm text-slate-600 dark:text-slate-300 font-bold">
                                         <div className="mt-1 w-2 h-2 bg-cartoon-blue rounded-full flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
-                                        <span>Aplikasi ini bikinan <strong className="text-cartoon-blue uppercase italic">Ardra</strong>. Jadi jangan diaku-akuin ya, hargain karya orang cuy!</span>
+                                        <span>Aplikasi ini bikinan <strong className="text-cartoon-blue uppercase italic">Ahdan</strong>. Jadi jangan diaku-akuin ya, hargain karya orang cuy!</span>
                                     </li>
                                     <li className="flex items-start gap-4 text-sm text-slate-600 dark:text-slate-300 font-bold">
                                         <div className="mt-1 w-2 h-2 bg-cartoon-blue rounded-full flex-shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
@@ -137,7 +137,7 @@ const AgreementModal: React.FC<AgreementModalProps> = ({ onAgree }) => {
                             </div>
                             
                             <p className="text-sm text-slate-600 dark:text-slate-300 font-bold leading-relaxed">
-                                Kita serius banget soal ini. Kalo ada yang nekat nyalahgunain atau ngerugiin owner (<strong className="text-red-600">Ardra</strong>), siap-siap aja urusan panjang sama <strong className="text-red-600">Hukum & Tim Legal</strong> kita.
+                                Kita serius banget soal ini. Kalo ada yang nekat nyalahgunain atau ngerugiin owner (<strong className="text-red-600">Ahdan</strong>), siap-siap aja urusan panjang sama <strong className="text-red-600">Hukum & Tim Legal</strong> kita.
                             </p>
 
                             <div className="p-4 bg-white/50 dark:bg-black/20 rounded-2xl border-2 border-red-500/20 text-center">

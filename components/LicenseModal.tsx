@@ -38,7 +38,7 @@ export const LicenseModal: React.FC<LicenseModalProps> = ({ isOpen, onClose }) =
           >
             <div className="hidden md:block mb-6 text-center">
               <h1 className="text-3xl font-extrabold text-white mb-2">Lisensi & Penggunaan Aplikasi</h1>
-              <p className="text-slate-300">Hak kepemilikan dan batasan penggunaan eksklusif oleh Ardra.</p>
+              <p className="text-slate-300">Hak kepemilikan dan batasan penggunaan eksklusif oleh Ahdan.</p>
             </div>
 
             <div className="bg-white dark:bg-gray-900 w-full rounded-[2rem] shadow-2xl overflow-hidden border border-white/20 dark:border-white/10 flex flex-col max-h-[85vh]">
@@ -53,7 +53,7 @@ export const LicenseModal: React.FC<LicenseModalProps> = ({ isOpen, onClose }) =
                         </div>
                         <div>
                             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Kepemilikan Intelektual</h2>
-                            <p className="text-slate-600 dark:text-slate-300 mt-2 text-sm leading-relaxed">Seluruh hak kekayaan intelektual atas aplikasi ini—termasuk konsep, desain, kode, dan alur kerja—adalah milik eksklusif <strong className="text-slate-900 dark:text-white">Ardra</strong>. Lisensi ini tidak memberikan hak kepemilikan apa pun kepada pengguna.</p>
+                            <p className="text-slate-600 dark:text-slate-300 mt-2 text-sm leading-relaxed">Seluruh hak kekayaan intelektual atas aplikasi ini—termasuk konsep, desain, kode, dan alur kerja—adalah milik eksklusif <strong className="text-slate-900 dark:text-white">Ahdan</strong>. Lisensi ini tidak memberikan hak kepemilikan apa pun kepada pengguna.</p>
                         </div>
                     </div>
 
@@ -63,7 +63,7 @@ export const LicenseModal: React.FC<LicenseModalProps> = ({ isOpen, onClose }) =
                         </div>
                         <div>
                             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Penggunaan yang Diizinkan</h2>
-                            <p className="text-slate-600 dark:text-slate-300 mt-2 text-sm leading-relaxed">Anda diberikan lisensi terbatas oleh Ardra untuk menggunakan aplikasi ini untuk keperluan pribadi atau bisnis yang sah, sesuai dengan fungsionalitas yang disediakan.</p>
+                            <p className="text-slate-600 dark:text-slate-300 mt-2 text-sm leading-relaxed">Anda diberikan lisensi terbatas oleh Ahdan untuk menggunakan aplikasi ini untuk keperluan pribadi atau bisnis yang sah, sesuai dengan fungsionalitas yang disediakan.</p>
                         </div>
                     </div>
 
@@ -77,7 +77,7 @@ export const LicenseModal: React.FC<LicenseModalProps> = ({ isOpen, onClose }) =
                             <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 mt-2 space-y-1 text-sm pl-1">
                                 <li>Menyalin, menduplikasi, atau mereproduksi aplikasi dalam bentuk apa pun.</li>
                                 <li>Melakukan rekayasa balik (reverse-engineering), membongkar, atau memodifikasi sistem.</li>
-                                <li>Menjual kembali, menyewakan, atau mendistribusikan ulang aplikasi tanpa izin tertulis dari <strong className="text-slate-900 dark:text-white">Ardra</strong>.</li>
+                                <li>Menjual kembali, menyewakan, atau mendistribusikan ulang aplikasi tanpa izin tertulis dari <strong className="text-slate-900 dark:text-white">Ahdan</strong>.</li>
                             </ul>
                         </div>
                     </div>

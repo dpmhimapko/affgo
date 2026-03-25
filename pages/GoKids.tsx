@@ -9,6 +9,7 @@ import { generateKidsPhotoshoot } from '../services/geminiService';
 import { Download as DownloadIcon, Eye as ZoomIcon, RefreshCw, Clock, Image as ImageIcon, Smile, Camera, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, Globe, Shirt, User } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
+import { auth, saveToHistory } from '../firebase';
 
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
 type Ethnicity = 'indonesia' | 'asia' | 'bule' | 'arab';
@@ -133,6 +134,15 @@ export const GoKids: React.FC = () => {
                     next[i] = { id: i, status: 'done', imageUrl: res.imageUrl };
                     return next;
                 });
+
+                // Save to history
+                if (auth.currentUser && res.imageUrl) {
+                    await saveToHistory(auth.currentUser.uid, {
+                        imageUrl: res.imageUrl,
+                        type: "Go Kids",
+                        prompt: `Kids Photoshoot - ${ethnicity} ${gender}`
+                    });
+                }
             } catch (err: any) {
                 console.error(`Error slot ${i}:`, err);
                 setResults(prev => {

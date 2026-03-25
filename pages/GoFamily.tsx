@@ -10,6 +10,7 @@ import { generateFamilyPhotoshoot } from '../services/geminiService';
 import { Download as DownloadIcon, Eye as ZoomIcon, RefreshCw, Clock, Image as ImageIcon, Users, User, Camera, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, Globe } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
+import { auth, saveToHistory } from '../firebase';
 
 type FamilyMode = 'couple' | 'full';
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
@@ -118,6 +119,15 @@ export const GoFamily: React.FC = () => {
                     next[i] = { id: i, status: 'done', imageUrl: res.imageUrl };
                     return next;
                 });
+
+                // Save to history
+                if (auth.currentUser && res.imageUrl) {
+                    await saveToHistory(auth.currentUser.uid, {
+                        imageUrl: res.imageUrl,
+                        type: "Go Family",
+                        prompt: `Family Photoshoot - ${ethnicity} ${mode}`
+                    });
+                }
             } catch (err: any) {
                 console.error(`Error slot ${i}:`, err);
                 setResults(prev => {

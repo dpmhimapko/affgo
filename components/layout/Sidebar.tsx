@@ -4,7 +4,7 @@ import type { View } from '../../App';
 import { TryOnIcon } from '../icons/TryOnIcon';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { SparklesIcon } from '../icons/SparklesIcon';
-import { X, Users, Smile, ShieldCheck, Eraser, ScanFace, Monitor, Info, Key, Settings as SettingsIcon } from '../icons/LucideIcons';
+import { X, Users, Smile, ShieldCheck, Eraser, ScanFace, Monitor, Info, Key, Settings as SettingsIcon, Clock } from '../icons/LucideIcons';
 import { HomeIcon } from '../icons/HomeIcon';
 import { MirrorIcon } from '../icons/MirrorIcon';
 
@@ -55,6 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isM
         title: "General",
         items: [
           { id: 'home', label: t('sidebar.home'), icon: <HomeIcon /> },
+          { id: 'history', label: t('sidebar.history'), icon: <Clock /> },
           { id: 'featureGuide', label: "Panduan Fitur", icon: <Info /> },
           { id: 'settings', label: t('sidebar.settings'), icon: <Key /> },
         ]
