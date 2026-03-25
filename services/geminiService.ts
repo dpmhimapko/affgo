@@ -69,49 +69,71 @@ async function extractImageFromResponse(response: GenerateContentResponse): Prom
     throw new Error("Model tidak menghasilkan gambar. Silakan coba lagi.");
 }
 
+// Wrapper to handle common Gemini API errors
+async function callGemini<T>(apiCall: () => Promise<T>): Promise<T> {
+    try {
+        return await apiCall();
+    } catch (error: any) {
+        const message = error.message || "";
+        if (message.includes("429") || message.includes("quota") || message.includes("exhausted")) {
+            window.dispatchEvent(new CustomEvent('gemini-api-error', { detail: 'API_KEY_LIMIT' }));
+            throw new Error("API_KEY_LIMIT");
+        }
+        if (message.includes("401") || message.includes("API_KEY_INVALID") || message.includes("invalid api key")) {
+            window.dispatchEvent(new CustomEvent('gemini-api-error', { detail: 'API_KEY_INVALID' }));
+            throw new Error("API_KEY_INVALID");
+        }
+        throw error;
+    }
+}
+
 const PRODUCT_PRESERVATION_PROMPT = "Maintain the EXACT identity, shape, color, and details of the product from the source image. Do not change the product itself, only the environment and lighting around it.";
 
 // =================== Go Product Studio ===================
 
 export const generateGoProductConcepts = async (image: UploadedImage, withModel: boolean, style: StyleTheme) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{
-            parts: [
-                { text: `Analyze this product image and suggest 4 creative studio photoshoot concepts in ${style} style. ${withModel ? "Include a human model in the concepts." : "Focus on product-only concepts."} Respond in JSON format.` },
-                toPart(image)
-            ]
-        }],
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.ARRAY,
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        name: { type: Type.STRING },
-                        prompt: { type: Type.STRING }
-                    },
-                    required: ["name", "prompt"]
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{
+                parts: [
+                    { text: `Analyze this product image and suggest 4 creative studio photoshoot concepts in ${style} style. ${withModel ? "Include a human model in the concepts." : "Focus on product-only concepts."} Respond in JSON format.` },
+                    toPart(image)
+                ]
+            }],
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            name: { type: Type.STRING },
+                            prompt: { type: Type.STRING }
+                        },
+                        required: ["name", "prompt"]
+                    }
                 }
             }
-        }
+        });
+        return JSON.parse(response.text || "[]");
     });
-    return JSON.parse(response.text || "[]");
 };
 
 export const generateGoProductImage = async (image: UploadedImage, prompt: string, aspectRatio: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts: [{ text: `${PRODUCT_PRESERVATION_PROMPT} ${prompt}` }, toPart(image)] }],
-        config: {
-            imageConfig: { aspectRatio: aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
-        }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: `${PRODUCT_PRESERVATION_PROMPT} ${prompt}` }, toPart(image)] }],
+            config: {
+                imageConfig: { aspectRatio: aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 export const generateStyloImage = async (prompt: string, modelImage: UploadedImage, productImage: UploadedImage | null, logoImage: UploadedImage | null, aspectRatio: string) => {
@@ -135,97 +157,120 @@ export const generateProductPhoto = async (image: UploadedImage, prompt: string)
     return generateGoProductImage(image, prompt, "1:1");
 };
 
-// =================== Go TryOn ===================
+export const generateAestheticImage = async (image: UploadedImage, prompt: string, aspectRatio: string) => {
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: `${PRODUCT_PRESERVATION_PROMPT} ${prompt}` }, toPart(image)] }],
+            config: {
+                imageConfig: { aspectRatio: aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
+    });
+};
 
 export const generateVirtualTryOn = async (product: ImageData, model: ImageData, aspectRatio: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{
-            parts: [
-                { text: `${PRODUCT_PRESERVATION_PROMPT} Synthesize a professional fashion photo where the subject from the second image is wearing the clothing from the first image. Maintain facial features of the model and details of the clothing. High resolution, studio lighting.` },
-                toPart(product),
-                toPart(model)
-            ]
-        }],
-        config: {
-            imageConfig: { aspectRatio: aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
-        }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{
+                parts: [
+                    { text: `${PRODUCT_PRESERVATION_PROMPT} Synthesize a professional fashion photo where the subject from the second image is wearing the clothing from the first image. Maintain facial features of the model and details of the clothing. High resolution, studio lighting.` },
+                    toPart(product),
+                    toPart(model)
+                ]
+            }],
+            config: {
+                imageConfig: { aspectRatio: aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 // =================== Go Ad Creator ===================
 
 export const generateAdImage = async (product: ImageData, options: AdCopyOptions, reference: ImageData | null) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const prompt = `${PRODUCT_PRESERVATION_PROMPT} Create a commercial advertisement poster. Headline: "${options.headline}". Description: "${options.description}". CTA: "${options.cta}". ${options.instructions}. Professional typography and layout.`;
-    const parts: Part[] = [{ text: prompt }, toPart(product)];
-    if (reference) parts.push(toPart(reference));
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const prompt = `${PRODUCT_PRESERVATION_PROMPT} Create a commercial advertisement poster. Headline: "${options.headline}". Description: "${options.description}". CTA: "${options.cta}". ${options.instructions}. Professional typography and layout.`;
+        const parts: Part[] = [{ text: prompt }, toPart(product)];
+        if (reference) parts.push(toPart(reference));
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts }],
-        config: {
-            imageConfig: { aspectRatio: "9:16" },
-            responseModalities: [Modality.IMAGE]
-        }
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts }],
+            config: {
+                imageConfig: { aspectRatio: "9:16" },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrls: [await extractImageFromResponse(response)] };
     });
-    return { imageUrls: [await extractImageFromResponse(response)] };
 };
 
 export const generateAdCopySuggestions = async (productName: string, keywords: string): Promise<AdCopySuggestions> => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ text: `Generate 3 variations of advertising copy for "${productName}" with keywords "${keywords}". Provide headlines, descriptions, and CTAs in JSON format.` }],
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.OBJECT,
-                properties: {
-                    headlines: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    descriptions: { type: Type.ARRAY, items: { type: Type.STRING } },
-                    ctas: { type: Type.ARRAY, items: { type: Type.STRING } }
-                },
-                required: ["headlines", "descriptions", "ctas"]
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{ text: `Generate 3 variations of advertising copy for "${productName}" with keywords "${keywords}". Provide headlines, descriptions, and CTAs in JSON format.` }],
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        headlines: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        descriptions: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        ctas: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    },
+                    required: ["headlines", "descriptions", "ctas"]
+                }
             }
-        }
+        });
+        return JSON.parse(response.text || "{}");
     });
-    return JSON.parse(response.text || "{}");
 };
 
 // =================== Go Pose ===================
 
 export const generateStudioPoses = async (image: ImageData, mode: PoseStudioMode, options: PoseStudioOptions) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const prompt = mode === PoseStudioMode.SMART 
-        ? `${PRODUCT_PRESERVATION_PROMPT} Suggest and render a variety of professional catalog poses for this model.`
-        : `${PRODUCT_PRESERVATION_PROMPT} Render the model in a ${options.theme} theme, ${options.angle} angle, ${options.framing} framing. ${options.instructions}`;
-    
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts: [{ text: prompt }, toPart(image)] }],
-        config: {
-            imageConfig: { aspectRatio: "3:4" },
-            responseModalities: [Modality.IMAGE]
-        }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const prompt = mode === PoseStudioMode.SMART 
+            ? `${PRODUCT_PRESERVATION_PROMPT} Suggest and render a variety of professional catalog poses for this model.`
+            : `${PRODUCT_PRESERVATION_PROMPT} Render the model in a ${options.theme} theme, ${options.angle} angle, ${options.framing} framing. ${options.instructions}`;
+        
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: prompt }, toPart(image)] }],
+            config: {
+                imageConfig: { aspectRatio: "3:4" },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrls: [await extractImageFromResponse(response)] };
     });
-    return { imageUrls: [await extractImageFromResponse(response)] };
 };
 
 export const changeModelPose = async (image: UploadedImage, pose: string, aspectRatio: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts: [{ text: `${PRODUCT_PRESERVATION_PROMPT} Change the model's pose to: ${pose}. Keep identity and outfit consistent.` }, toPart(image)] }],
-        config: {
-            imageConfig: { aspectRatio: aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
-        }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: `${PRODUCT_PRESERVATION_PROMPT} Change the model's pose to: ${pose}. Keep identity and outfit consistent.` }, toPart(image)] }],
+            config: {
+                imageConfig: { aspectRatio: aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 // =================== Go Editor ===================
@@ -255,64 +300,70 @@ export const editImageWithMask = async (image: ImageData, prompt: string) => {
 };
 
 export const editImage = async (original: UploadedImage, mask: UploadedImage, prompt: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ 
-            parts: [
-                { text: `${PRODUCT_PRESERVATION_PROMPT} ${prompt}` }, 
-                toPart(original),
-                { text: "This is the area to edit indicated by the mask:" },
-                toPart(mask)
-            ] 
-        }],
-        config: {
-            responseModalities: [Modality.IMAGE]
-        }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ 
+                parts: [
+                    { text: `${PRODUCT_PRESERVATION_PROMPT} ${prompt}` }, 
+                    toPart(original),
+                    { text: "This is the area to edit indicated by the mask:" },
+                    toPart(mask)
+                ] 
+            }],
+            config: {
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 // =================== Video Studio ===================
 
 export const generateVideo = async (prompt: string, image: ImageData) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    let operation = await ai.models.generateVideos({
-        model: 'veo-3.1-fast-generate-preview',
-        prompt: prompt,
-        image: {
-            imageBytes: image.dataUrl.split(',')[1],
-            mimeType: image.mimeType,
-        },
-        config: {
-            numberOfVideos: 1,
-            resolution: '720p',
-            aspectRatio: '16:9'
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        let operation = await ai.models.generateVideos({
+            model: 'veo-3.1-fast-generate-preview',
+            prompt: prompt,
+            image: {
+                imageBytes: image.dataUrl.split(',')[1],
+                mimeType: image.mimeType,
+            },
+            config: {
+                numberOfVideos: 1,
+                resolution: '720p',
+                aspectRatio: '16:9'
+            }
+        });
+        while (!operation.done) {
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            operation = await ai.operations.getVideosOperation({ operation: operation });
         }
+        return operation.response?.generatedVideos?.[0]?.video?.uri;
     });
-    while (!operation.done) {
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        operation = await ai.operations.getVideosOperation({ operation: operation });
-    }
-    return operation.response?.generatedVideos?.[0]?.video?.uri;
 };
 
 export const generateTextToVideo = async (prompt: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    let operation = await ai.models.generateVideos({
-        model: 'veo-3.1-fast-generate-preview',
-        prompt: prompt,
-        config: {
-            numberOfVideos: 1,
-            resolution: '720p',
-            aspectRatio: '16:9'
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        let operation = await ai.models.generateVideos({
+            model: 'veo-3.1-fast-generate-preview',
+            prompt: prompt,
+            config: {
+                numberOfVideos: 1,
+                resolution: '720p',
+                aspectRatio: '16:9'
+            }
+        });
+        while (!operation.done) {
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            operation = await ai.operations.getVideosOperation({ operation: operation });
         }
+        return operation.response?.generatedVideos?.[0]?.video?.uri;
     });
-    while (!operation.done) {
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        operation = await ai.operations.getVideosOperation({ operation: operation });
-    }
-    return operation.response?.generatedVideos?.[0]?.video?.uri;
 };
 
 export const suggestMotionPrompt = async (image: ImageData) => {
@@ -735,134 +786,150 @@ export const visualizeStoryboardScene = async (panel: StoryboardPanel, aspectRat
 };
 
 export const suggestNextStoryboardScenes = async (lastScene: { visual_prompt: string; narration: string; imageUrl: string }, reference: UploadedImage | null): Promise<StoryboardPanel[]> => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const parts: Part[] = [
-        { text: `Based on the last scene "${lastScene.narration}", suggest 4 possible next scenes. Return visual_prompt and narration for each in JSON.` },
-        { inlineData: { data: lastScene.imageUrl.split(',')[1], mimeType: 'image/png' } }
-    ];
-    if (reference) parts.push(toPart(reference));
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const parts: Part[] = [
+            { text: `Based on the last scene "${lastScene.narration}", suggest 4 possible next scenes. Return visual_prompt and narration for each in JSON.` },
+            { inlineData: { data: lastScene.imageUrl.split(',')[1], mimeType: 'image/png' } }
+        ];
+        if (reference) parts.push(toPart(reference));
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ parts }],
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.ARRAY,
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        visual_prompt: { type: Type.STRING },
-                        narration: { type: Type.STRING }
-                    },
-                    required: ["visual_prompt", "narration"]
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{ parts }],
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            visual_prompt: { type: Type.STRING },
+                            narration: { type: Type.STRING }
+                        },
+                        required: ["visual_prompt", "narration"]
+                    }
                 }
             }
-        }
+        });
+        return JSON.parse(response.text || "[]");
     });
-    return JSON.parse(response.text || "[]");
 };
 
 export const generateVideoAIPrompt = async (panels: StoryboardPanel | StoryboardPanel[]) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const text = Array.isArray(panels) ? panels.map(p => p.narration).join(". ") : panels.narration;
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ text: `Convert this storyboard sequence into a single technical video generation prompt: ${text}` }]
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const text = Array.isArray(panels) ? panels.map(p => p.narration).join(". ") : panels.narration;
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{ text: `Convert this storyboard sequence into a single technical video generation prompt: ${text}` }]
+        });
+        return response.text || "";
     });
-    return response.text || "";
 };
 
 // =================== Go Video Generator ===================
 
 export const enhanceVideoPrompt = async (inspiration: UploadedImage, basicIdea: string, includeDialog: boolean, dialogText: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const prompt = `Create a master technical T2V prompt. Idea: ${basicIdea}. ${includeDialog ? "Include lip-sync dialogue: " + dialogText : ""}. Reference the inspiration image for style and subject. One dense line.`;
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ parts: [{ text: prompt }, toPart(inspiration)] }]
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const prompt = `Create a master technical T2V prompt. Idea: ${basicIdea}. ${includeDialog ? "Include lip-sync dialogue: " + dialogText : ""}. Reference the inspiration image for style and subject. One dense line.`;
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{ parts: [{ text: prompt }, toPart(inspiration)] }]
+        });
+        return response.text || "";
     });
-    return response.text || "";
 };
 
 // =================== Go Mockup ===================
 
 export const generateMockupImage = async (design: UploadedImage, target: UploadedImage | string, instructions: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    // Fix: Changed const to let for prompt reassignment and ensured finalizing it before creating the parts array.
-    let prompt = `${PRODUCT_PRESERVATION_PROMPT} Apply this design onto the mockup object. ${instructions}. Maintain texture and lighting.`;
-    if (typeof target === 'string') {
-        prompt += ` Target: ${target}`;
-    }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        // Fix: Changed const to let for prompt reassignment and ensured finalizing it before creating the parts array.
+        let prompt = `${PRODUCT_PRESERVATION_PROMPT} Apply this design onto the mockup object. ${instructions}. Maintain texture and lighting.`;
+        if (typeof target === 'string') {
+            prompt += ` Target: ${target}`;
+        }
 
-    const parts: Part[] = [{ text: prompt }, toPart(design)];
-    if (typeof target !== 'string') {
-        parts.push(toPart(target));
-    }
+        const parts: Part[] = [{ text: prompt }, toPart(design)];
+        if (typeof target !== 'string') {
+            parts.push(toPart(target));
+        }
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts }],
-        config: { responseModalities: [Modality.IMAGE] }
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts }],
+            config: { responseModalities: [Modality.IMAGE] }
+        });
+        return { imageUrls: [await extractImageFromResponse(response)] };
     });
-    return { imageUrls: [await extractImageFromResponse(response)] };
 };
 
+// =================== Go Setup ===================
+
 export const generateSetupImage = async (product: UploadedImage, background: UploadedImage, prompt: string, aspectRatio: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ 
-            parts: [
-                { text: `${PRODUCT_PRESERVATION_PROMPT} ${prompt}` }, 
-                toPart(product),
-                { text: "Background reference:" },
-                toPart(background)
-            ] 
-        }],
-        config: {
-            imageConfig: { aspectRatio: aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
-        }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ 
+                parts: [
+                    { text: `${PRODUCT_PRESERVATION_PROMPT} ${prompt}` }, 
+                    toPart(product),
+                    { text: "Background reference:" },
+                    toPart(background)
+                ] 
+            }],
+            config: {
+                imageConfig: { aspectRatio: aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 // =================== Go Photoshoot ===================
 
 export const generateSinglePhotoshootImage = async (source: UploadedImage, fullPrompt: string, negativePrompt: string, aspectRatio: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    // Strong instruction to maintain product identity
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts: [{ text: `${PRODUCT_PRESERVATION_PROMPT} ${fullPrompt}. Negative: ${negativePrompt}` }, toPart(source)] }],
-        config: {
-            imageConfig: { aspectRatio: aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
-        }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        // Strong instruction to maintain product identity
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: `${PRODUCT_PRESERVATION_PROMPT} ${fullPrompt}. Negative: ${negativePrompt}` }, toPart(source)] }],
+            config: {
+                imageConfig: { aspectRatio: aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 // =================== Go Voice Studio ===================
 
 export const generateVoiceover = async (text: string, voiceName: string, speed: string, pitch: string, mood?: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: `${mood ? mood + ": " : ""}${text}` }] }],
-        config: {
-            responseModalities: [Modality.AUDIO],
-            speechConfig: {
-                voiceConfig: {
-                    prebuiltVoiceConfig: { voiceName },
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash-preview-tts",
+            contents: [{ parts: [{ text: `${mood ? mood + ": " : ""}${text}` }] }],
+            config: {
+                responseModalities: [Modality.AUDIO],
+                speechConfig: {
+                    voiceConfig: {
+                        prebuiltVoiceConfig: { voiceName },
+                    },
                 },
             },
-        },
+        });
+        const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        if (!base64Audio) throw new Error("Gagal merender audio.");
+        return { base64Audio, sampleRate: 24000 };
     });
-    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-    if (!base64Audio) throw new Error("Gagal merender audio.");
-    return { base64Audio, sampleRate: 24000 };
 };
 
 export const generateVoiceSample = async (voiceName: string) => {
@@ -870,31 +937,37 @@ export const generateVoiceSample = async (voiceName: string) => {
 };
 
 export const generateAIScript = async (type: string, tone: string, topic: string, includeTags: boolean) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const prompt = `Write a high-converting advertisement script in Indonesian. Type: ${type}. Tone: ${tone}. Topic: ${topic}. ${includeTags ? "Include emotion tags like [semangat], [lembut], [tegas] in the text." : ""}`;
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ text: prompt }]
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const prompt = `Write a high-converting advertisement script in Indonesian. Type: ${type}. Tone: ${tone}. Topic: ${topic}. ${includeTags ? "Include emotion tags like [semangat], [lembut], [tegas] in the text." : ""}`;
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{ text: prompt }]
+        });
+        return response.text || "";
     });
-    return response.text || "";
 };
 
 export const translateScript = async (script: string, lang: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ text: `Translate this script into ${lang} while maintaining emotion tags: ${script}` }]
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{ text: `Translate this script into ${lang} while maintaining emotion tags: ${script}` }]
+        });
+        return response.text || "";
     });
-    return response.text || "";
 };
 
 export const analyzeAndTagScript = async (script: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: [{ text: `Analyze the emotions in this script and insert [tag] indicators for a voice narrator: ${script}` }]
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: [{ text: `Analyze the emotions in this script and insert [tag] indicators for a voice narrator: ${script}` }]
+        });
+        return response.text || "";
     });
-    return response.text || "";
 };
 
 // =================== Go Kids & Family ===================
@@ -908,101 +981,109 @@ export const generateKidsPhotoshoot = async (
     posePrompt: string,
     aspectRatio: string = "1:1"
 ): Promise<{ imageUrl: string }> => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    const prompt = `${PRODUCT_PRESERVATION_PROMPT} Execute a high-fidelity photoshoot featuring an elementary school-age model (around 7-12 years old). Subject: One ${genderPrompt} child model, ${ethnicityPrompt} ethnic appearance. Pose: ${posePrompt}. Model wearing EXACT ${productType} from image. Theme: ${themePrompt}. Professional commercial aesthetic.`;
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts: [{ text: prompt }, toPart(productImage)] }],
-        config: {
-            imageConfig: { aspectRatio: aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
-        }
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        const prompt = `${PRODUCT_PRESERVATION_PROMPT} Execute a high-fidelity photoshoot featuring an elementary school-age model (around 7-12 years old). Subject: One ${genderPrompt} child model, ${ethnicityPrompt} ethnic appearance. Pose: ${posePrompt}. Model wearing EXACT ${productType} from image. Theme: ${themePrompt}. Professional commercial aesthetic.`;
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: prompt }, toPart(productImage)] }],
+            config: {
+                imageConfig: { aspectRatio: aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 export const generateFamilyPhotoshoot = async (images: { father: UploadedImage | null, mother: UploadedImage | null, son: UploadedImage | null, daughter: UploadedImage | null }, mode: string, theme: string, aspectRatio: string, isHijab: boolean, ethnicity: string) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    let prompt = `${PRODUCT_PRESERVATION_PROMPT} Family photoshoot at ${theme}. Mode: ${mode}. Ethnicity: ${ethnicity}. ${isHijab ? "The mother and daughter are wearing hijab." : ""} Each person wearing their respective clothing from input images.`;
-    const parts: Part[] = [{ text: prompt }];
-    if (images.father) parts.push(toPart(images.father));
-    if (images.mother) parts.push(toPart(images.mother));
-    if (images.son) parts.push(toPart(images.son));
-    if (images.daughter) parts.push(toPart(images.daughter));
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        let prompt = `${PRODUCT_PRESERVATION_PROMPT} Family photoshoot at ${theme}. Mode: ${mode}. Ethnicity: ${ethnicity}. ${isHijab ? "The mother and daughter are wearing hijab." : ""} Each person wearing their respective clothing from input images.`;
+        const parts: Part[] = [{ text: prompt }];
+        if (images.father) parts.push(toPart(images.father));
+        if (images.mother) parts.push(toPart(images.mother));
+        if (images.son) parts.push(toPart(images.son));
+        if (images.daughter) parts.push(toPart(images.daughter));
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts }],
-        config: {
-            imageConfig: { aspectRatio: aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
-        }
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts }],
+            config: {
+                imageConfig: { aspectRatio: aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 // =================== Go Model VIP ===================
 
 export const generateModelVipPhotoshoot = async (product: UploadedImage, options: ModelVipOptions) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    
-    let subjectDesc = `a professional ${options.gender} fashion model with a ${options.bodyType} body, ${options.ethnicity} ethnicity, ${options.facialExpression}.`;
-    if (options.isHijab) subjectDesc += " The model is wearing a clean aesthetic hijab.";
-    if (options.hasMakeup) subjectDesc += " wearing professional studio makeup.";
-    if (options.hasMask) subjectDesc += " wearing a plain white non-medical face mask.";
-    
-    if (options.glassesType === 'sunglasses') {
-        subjectDesc += " wearing stylish high-end sunglasses.";
-    } else if (options.glassesType === 'reading') {
-        subjectDesc += " wearing elegant reading glasses.";
-    }
-    
-    let themeDesc = options.theme;
-    if (options.theme === 'aestheticVip') {
-        themeDesc = "soft grey fur carpet in a modern minimalist room with monochrome art posters and ambient teal LED lighting, elegant purple accents, professional photography, high-key lighting";
-    }
-
-    const prompt = `${PRODUCT_PRESERVATION_PROMPT} FASHION PORTRAIT: ${subjectDesc} The model is wearing the EXACT clothing item from the input image. Main Pose: ${options.pose}. Hand gesture: ${options.handPose}. Background: ${themeDesc}. ${options.brief ? "Additional Instructions: " + options.brief + "." : ""} High fidelity textures, cinematic lighting, 8k resolution, commercial aesthetic. No text, no watermark.`;
-
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts: [{ text: prompt }, toPart(product)] }],
-        config: {
-            imageConfig: { aspectRatio: options.aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        
+        let subjectDesc = `a professional ${options.gender} fashion model with a ${options.bodyType} body, ${options.ethnicity} ethnicity, ${options.facialExpression}.`;
+        if (options.isHijab) subjectDesc += " The model is wearing a clean aesthetic hijab.";
+        if (options.hasMakeup) subjectDesc += " wearing professional studio makeup.";
+        if (options.hasMask) subjectDesc += " wearing a plain white non-medical face mask.";
+        
+        if (options.glassesType === 'sunglasses') {
+            subjectDesc += " wearing stylish high-end sunglasses.";
+        } else if (options.glassesType === 'reading') {
+            subjectDesc += " wearing elegant reading glasses.";
         }
+        
+        let themeDesc = options.theme;
+        if (options.theme === 'aestheticVip') {
+            themeDesc = "soft grey fur carpet in a modern minimalist room with monochrome art posters and ambient teal LED lighting, elegant purple accents, professional photography, high-key lighting";
+        }
+
+        const prompt = `${PRODUCT_PRESERVATION_PROMPT} FASHION PORTRAIT: ${subjectDesc} The model is wearing the EXACT clothing item from the input image. Main Pose: ${options.pose}. Hand gesture: ${options.handPose}. Background: ${themeDesc}. ${options.brief ? "Additional Instructions: " + options.brief + "." : ""} High fidelity textures, cinematic lighting, 8k resolution, commercial aesthetic. No text, no watermark.`;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: prompt }, toPart(product)] }],
+            config: {
+                imageConfig: { aspectRatio: options.aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 // =================== Go Selfie VIP ===================
 
 export const generateSelfieVipPhotoshoot = async (product: UploadedImage, options: SelfieVipOptions) => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
 
-    let subjectDesc = `A beautiful, photorealistic ${options.gender} model, ${options.ethnicity} ethnicity.`;
-    if (options.isHijab) subjectDesc += " The model is wearing a stylish, modern hijab.";
+        let subjectDesc = `A beautiful, photorealistic ${options.gender} model, ${options.ethnicity} ethnicity.`;
+        if (options.isHijab) subjectDesc += " The model is wearing a stylish, modern hijab.";
 
-    const faceVisibilityAction = options.faceVisibility === 'obstructed'
-        ? "holding a modern smartphone that partially covers their face while taking a mirror selfie. The phone is clearly visible in their hand in the reflection."
-        : "holding a modern smartphone to the side, taking a mirror selfie with their full face visible in the reflection. The phone is clearly visible in their hand.";
+        const faceVisibilityAction = options.faceVisibility === 'obstructed'
+            ? "holding a modern smartphone that partially covers their face while taking a mirror selfie. The phone is clearly visible in their hand in the reflection."
+            : "holding a modern smartphone to the side, taking a mirror selfie with their full face visible in the reflection. The phone is clearly visible in their hand.";
 
-    const prompt = `${PRODUCT_PRESERVATION_PROMPT} FASHION MIRROR SELFIE: An ultra-realistic, high-end photograph of ${subjectDesc}.
-    The model is wearing the EXACT clothing item from the input image.
-    ACTION: The model is ${options.pose}, ${faceVisibilityAction}
-    BACKGROUND: ${options.theme}.
-    STYLE: Photorealistic, cinematic lighting, looks like it was taken with a high-end smartphone, 8k resolution, commercial fashion aesthetic.
-    NEGATIVE: No text, no watermarks, no unnatural skin smoothing, no distorted reflections, no extra limbs, do not show the back of the phone, show the phone screen in the mirror reflection.`;
+        const prompt = `${PRODUCT_PRESERVATION_PROMPT} FASHION MIRROR SELFIE: An ultra-realistic, high-end photograph of ${subjectDesc}.
+        The model is wearing the EXACT clothing item from the input image.
+        ACTION: The model is ${options.pose}, ${faceVisibilityAction}
+        BACKGROUND: ${options.theme}.
+        STYLE: Photorealistic, cinematic lighting, looks like it was taken with a high-end smartphone, 8k resolution, commercial fashion aesthetic.
+        NEGATIVE: No text, no watermarks, no unnatural skin smoothing, no distorted reflections, no extra limbs, do not show the back of the phone, show the phone screen in the mirror reflection.`;
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts: [{ text: prompt }, toPart(product)] }],
-        config: {
-            imageConfig: { aspectRatio: options.aspectRatio as any },
-            responseModalities: [Modality.IMAGE]
-        }
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: prompt }, toPart(product)] }],
+            config: {
+                imageConfig: { aspectRatio: options.aspectRatio as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
+        return { imageUrl: await extractImageFromResponse(response) };
     });
-    return { imageUrl: await extractImageFromResponse(response) };
 };
 
 
@@ -1012,9 +1093,10 @@ export const generateCleanImage = async (
     image: UploadedImage, 
     productType: string
 ): Promise<{ imageUrl: string }> => {
-    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-    
-    const prompt = `Act as an expert e-commerce image editor. Your task is to transform this photo of a product being worn by a model into a clean, product-only 'ghost mannequin' or 'flat lay' style image.
+    return callGemini(async () => {
+        const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+        
+        const prompt = `Act as an expert e-commerce image editor. Your task is to transform this photo of a product being worn by a model into a clean, product-only 'ghost mannequin' or 'flat lay' style image.
 
 **CRITICAL INSTRUCTIONS:**
 1.  **Identify the Product:** The main product to isolate is the '${productType}'.
@@ -1025,47 +1107,52 @@ export const generateCleanImage = async (
 
 Do not include any part of the human model in the final image. The result should be a professional, catalog-ready product shot on a pure white background.`;
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: [{ parts: [{ text: prompt }, toPart(image)] }],
-        config: {
-            imageConfig: { aspectRatio: "1:1" as any },
-            responseModalities: [Modality.IMAGE]
-        }
-    });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: [{ parts: [{ text: prompt }, toPart(image)] }],
+            config: {
+                imageConfig: { aspectRatio: "1:1" as any },
+                responseModalities: [Modality.IMAGE]
+            }
+        });
 
-    return { imageUrl: await extractImageFromResponse(response) };
+        return { imageUrl: await extractImageFromResponse(response) };
+    });
 };
 
 // Generic generateContent
 export const generateContent = async (prompt: string, images: UploadedImage[], config: any = {}) => {
-  const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-  const parts: Part[] = [
-    { text: prompt },
-    ...images.map(img => toPart(img))
-  ];
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: [{ parts }],
-    ...config
+  return callGemini(async () => {
+    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+    const parts: Part[] = [
+      { text: prompt },
+      ...images.map(img => toPart(img))
+    ];
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: [{ parts }],
+      ...config
+    });
+    return response.text;
   });
-  return response.text;
 };
 
 // Generic generateImage
 export const generateImage = async (prompt: string, image?: UploadedImage, aspectRatio: string = "1:1") => {
-  const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
-  const parts: Part[] = [{ text: prompt }];
-  if (image) parts.push(toPart(image));
+  return callGemini(async () => {
+    const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
+    const parts: Part[] = [{ text: prompt }];
+    if (image) parts.push(toPart(image));
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: [{ parts }],
-    config: {
-        imageConfig: { aspectRatio: aspectRatio as any },
-        responseModalities: [Modality.IMAGE]
-    }
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: [{ parts }],
+      config: {
+          imageConfig: { aspectRatio: aspectRatio as any },
+          responseModalities: [Modality.IMAGE]
+      }
+    });
+    const imageUrl = await extractImageFromResponse(response);
+    return { imageUrl };
   });
-  const imageUrl = await extractImageFromResponse(response);
-  return { imageUrl };
 };

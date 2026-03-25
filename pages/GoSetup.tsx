@@ -78,7 +78,6 @@ export const GoSetup: React.FC = () => {
     const [vibe, setVibe] = useState<Vibe>('blue');
     const [handCount, setHandCount] = useState<HandCount>('1');
     const [gender, setGender] = useState<Gender>('female');
-    const [motion, setMotion] = useState<Motion>('subtleWiggle');
     
     const [results, setResults] = useState<PhotoshootResult[] | null>(null);
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
@@ -142,19 +141,10 @@ export const GoSetup: React.FC = () => {
                     aspectRatio
                 );
 
-                const motionDescriptions: Record<Motion, string> = {
-                    subtleWiggle: "The person gently wiggles the product back and forth to show its texture and how it catches the light.",
-                    gentleTilt: "The person slowly tilts the product side to side, revealing different angles of the design.",
-                    slowRotation: "The person performs a very slow and minimal rotation of the product to showcase its 3D form.",
-                    stillLife: "The product remains perfectly still in the hands, while the ambient background lights gently pulse and shimmer."
-                };
-
-                const videoPrompt = `A cinematic close-up video of ${personText} holding the product with ${handCount === '1' ? 'one hand' : 'two hands'} in a ${vibe} themed setup. ${motionDescriptions[motion]} In the background, soft ${vibe} ambient lights gently pulse and the monitor displays a soft glowing wallpaper. High-end commercial aesthetic, smooth motion.`;
-                
                 setResults(prev => {
                     if (!prev) return prev;
                     const next = [...prev];
-                    next[i] = { id: i, status: 'done', imageUrl: res.imageUrl, videoPrompt };
+                    next[i] = { id: i, status: 'done', imageUrl: res.imageUrl };
                     return next;
                 });
             } catch (err: any) {
@@ -315,30 +305,6 @@ export const GoSetup: React.FC = () => {
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
                             step={5} 
-                            title={t('goSetup.sections.motion.title')}
-                            description={t('goSetup.sections.motion.description')}
-                        />
-                        <div className="grid grid-cols-2 gap-2">
-                            {(['subtleWiggle', 'gentleTilt', 'slowRotation', 'stillLife'] as Motion[]).map(m => (
-                                <button 
-                                    key={m} 
-                                    onClick={() => setMotion(m)} 
-                                    disabled={isGenerating}
-                                    className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
-                                        motion === m 
-                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
-                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
-                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    <span className="text-xs font-bold">{t('goSetup.motions.' + m)}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
-                        <StepHeader 
-                            step={6} 
                             title={t('goSetup.sections.vibe.title')}
                             description={t('goSetup.sections.vibe.description')}
                         />
@@ -444,23 +410,6 @@ export const GoSetup: React.FC = () => {
                                         <>
                                             <img src={result.imageUrl} alt={`Result ${index + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 backdrop-blur-[2px]">
-                                                {result.videoPrompt && (
-                                                    <div className="mb-4 w-full">
-                                                        <p className="text-[10px] font-black uppercase text-indigo-400 mb-1 tracking-widest">Video Prompt</p>
-                                                        <p className="text-[10px] text-white/90 line-clamp-3 leading-relaxed bg-black/40 p-2 rounded-lg border border-white/10 italic">
-                                                            "{result.videoPrompt}"
-                                                        </p>
-                                                        <button 
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                navigator.clipboard.writeText(result.videoPrompt!);
-                                                            }}
-                                                            className="mt-2 text-[9px] font-bold text-indigo-300 hover:text-white transition-colors flex items-center gap-1"
-                                                        >
-                                                            <RefreshCw className="w-3 h-3" /> Salin Prompt Video
-                                                        </button>
-                                                    </div>
-                                                )}
                                                 <div className="flex gap-2 w-full">
                                                     <button onClick={() => handleZoom(result.imageUrl!)} className="flex-1 bg-white/20 hover:bg-white/40 text-white p-2 rounded-xl backdrop-blur-md transition-all flex items-center justify-center"><ZoomIcon className="w-4 h-4" /></button>
                                                     <button onClick={() => handleDownload(result.imageUrl!, index)} className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-xl transition-all shadow-lg flex items-center justify-center"><DownloadIcon className="w-4 h-4" /></button>

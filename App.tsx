@@ -25,7 +25,7 @@ import { useApiKey } from './hooks/useApiKey';
 import { AlertTriangle as AlertCircle, X } from './components/icons/LucideIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKids' | 'goFamily' | 'goModelVip' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'adminDashboard' | 'settings' | 'history';
+export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKids' | 'goFamily' | 'goModelVip' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'adminDashboard' | 'settings';
 
 function AppContent() {
   const { t } = useLanguage();
@@ -35,6 +35,15 @@ function AppContent() {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showApiKeyWarning, setShowApiKeyWarning] = useState(false);
+  const [apiErrorType, setApiErrorType] = useState<'API_KEY_LIMIT' | 'API_KEY_INVALID' | null>(null);
+
+  useEffect(() => {
+    const handleError = (e: any) => {
+      setApiErrorType(e.detail);
+    };
+    window.addEventListener('gemini-api-error', handleError);
+    return () => window.removeEventListener('gemini-api-error', handleError);
+  }, []);
 
   useEffect(() => {
     if (!isConfigured && user) {
@@ -94,7 +103,6 @@ function AppContent() {
         case 'goSetup': return <GoSetup />;
         case 'adminDashboard': return <AdminDashboard />;
         case 'settings': return <Settings />;
-        case 'history': return <History />;
         default: return <HomePage />;
       }
   };
@@ -121,6 +129,46 @@ function AppContent() {
   return (
     <Layout activeView={activeView} setActiveView={handleNavigate} isAdmin={isAdmin}>
       <AnimatePresence>
+        {apiErrorType && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <div className="bg-white dark:bg-slate-800 border-4 border-cartoon-dark rounded-[2.5rem] p-8 max-w-md w-full shadow-cartoon-lg relative">
+              <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-3xl flex items-center justify-center mx-auto mb-6 border-4 border-cartoon-dark shadow-cartoon">
+                <AlertCircle className="w-10 h-10 text-red-600 dark:text-red-400" />
+              </div>
+              
+              <h3 className="text-2xl font-black text-cartoon-dark dark:text-white text-center mb-4 uppercase italic tracking-tight">
+                {apiErrorType === 'API_KEY_LIMIT' ? t('errors.apiKeyLimit') : t('errors.apiKeyInvalid')}
+              </h3>
+              
+              <p className="text-slate-600 dark:text-slate-300 text-center mb-8 font-bold leading-relaxed">
+                {apiErrorType === 'API_KEY_LIMIT' ? t('errors.apiKeyLimitDesc') : t('errors.apiKeyInvalidDesc')}
+              </p>
+              
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    handleNavigate('settings');
+                    setApiErrorType(null);
+                  }}
+                  className="w-full py-4 px-6 bg-cartoon-blue text-white font-black rounded-2xl border-4 border-cartoon-dark shadow-cartoon hover:shadow-cartoon-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase italic"
+                >
+                  {t('sidebar.settings')}
+                </button>
+                <button
+                  onClick={() => setApiErrorType(null)}
+                  className="w-full py-3 px-6 bg-white dark:bg-slate-700 text-cartoon-dark dark:text-white font-black rounded-2xl border-4 border-cartoon-dark shadow-cartoon hover:shadow-cartoon-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase italic"
+                >
+                  Tutup
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
         {showApiKeyWarning && (
           <motion.div
             initial={{ opacity: 0, y: -50 }}

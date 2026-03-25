@@ -65,7 +65,11 @@ export const translations: Translations = {
       cleared: "API Key Dihapus",
       missing: "API Key Belum Diatur",
       missingDesc: "Anda perlu mengatur Gemini API Key untuk menggunakan fitur AI.",
-      warning: "Peringatan: API Key diperlukan untuk menjalankan aplikasi ini di Vercel atau hosting lainnya."
+      warning: "Peringatan: API Key diperlukan untuk menjalankan aplikasi ini di Vercel atau hosting lainnya.",
+      limitReached: "Limit API Key Tercapai",
+      limitReachedDesc: "Kuota API Key Anda telah habis untuk saat ini. Silakan ganti dengan API Key lain atau coba lagi nanti.",
+      invalid: "API Key Tidak Valid",
+      invalidDesc: "API Key yang Anda masukkan tidak valid atau sudah tidak bisa digunakan. Silakan ganti dengan API Key yang baru."
     },
     help: {
       text: "Belum punya API Key?",

@@ -55,7 +55,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isM
         title: "General",
         items: [
           { id: 'home', label: t('sidebar.home'), icon: <HomeIcon /> },
-          { id: 'history', label: t('sidebar.history'), icon: <Clock /> },
           { id: 'featureGuide', label: "Panduan Fitur", icon: <Info /> },
           { id: 'settings', label: t('sidebar.settings'), icon: <Key /> },
         ]
