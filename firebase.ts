@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp, updateDoc, collection, query, orderBy, addDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp, updateDoc, collection, query, orderBy, addDoc, deleteDoc } from 'firebase/firestore';
 
 // Import the Firebase configuration
 import firebaseConfig from './firebase-applet-config.json';
@@ -22,4 +22,4 @@ export const saveToHistory = async (userId: string, data: { imageUrl: string; ty
     }
 };
 
-export { signInWithPopup, signOut, onAuthStateChanged, doc, getDoc, setDoc, onSnapshot, serverTimestamp, updateDoc, collection, query, orderBy, addDoc };
+export { signInWithPopup, signOut, onAuthStateChanged, doc, getDoc, setDoc, onSnapshot, serverTimestamp, updateDoc, collection, query, orderBy, addDoc, deleteDoc };

@@ -31,7 +31,7 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && 
              (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin" ||
-              (request.auth.token.email == "aahdan298@gmail.com" && request.auth.token.email_verified == true));
+              request.auth.token.email == "aahdan298@gmail.com");
     }
 
     function isValidUser(data) {
@@ -63,6 +63,9 @@ service cloud.firestore {
                     (isOwner(userId) && 
                      request.resource.data.isApproved == resource.data.isApproved &&
                      request.resource.data.role == resource.data.role);
+
+      // Only admin can delete users
+      allow delete: if isAdmin();
     }
   }
 }

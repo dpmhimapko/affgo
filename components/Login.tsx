@@ -1,5 +1,5 @@
 import React from 'react';
-import { auth, googleProvider, signInWithPopup, db, doc, getDoc, setDoc, serverTimestamp } from '../firebase';
+import { auth, googleProvider, signInWithPopup, db, doc, getDoc, setDoc, serverTimestamp, updateDoc } from '../firebase';
 import { motion } from 'framer-motion';
 
 export const Login: React.FC = () => {
@@ -22,7 +22,13 @@ export const Login: React.FC = () => {
           displayName: user.displayName,
           isApproved: isAdmin,
           role: isAdmin ? 'admin' : 'user',
-          createdAt: serverTimestamp()
+          createdAt: serverTimestamp(),
+          lastActive: serverTimestamp()
+        });
+      } else {
+        // Update lastActive even for existing users
+        await updateDoc(userDocRef, {
+          lastActive: serverTimestamp()
         });
       }
     } catch (error) {

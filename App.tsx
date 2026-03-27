@@ -17,7 +17,7 @@ import { History } from './pages/History';
 import { FeatureGuide } from './pages/FeatureGuide';
 import { AdminDashboard } from './pages/AdminDashboard';
 import Settings from './pages/Settings';
-import { auth, onAuthStateChanged, db, doc, onSnapshot } from './firebase';
+import { auth, onAuthStateChanged, db, doc, onSnapshot, updateDoc } from './firebase';
 import { Login } from './components/Login';
 import { ApprovalPending } from './components/ApprovalPending';
 import { Spinner } from './components/Spinner';
@@ -81,6 +81,27 @@ function AppContent() {
       });
 
       return () => unsubscribeDoc();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      const updateActivity = async () => {
+        try {
+          await updateDoc(doc(db, 'users', user.uid), {
+            lastActive: new Date()
+          });
+        } catch (e) {
+          console.error("Error updating activity:", e);
+        }
+      };
+
+      // Update immediately on mount/login
+      updateActivity();
+
+      // Removed 2-minute interval as per user request
+      // const interval = setInterval(updateActivity, 120000);
+      // return () => clearInterval(interval);
     }
   }, [user]);
 
