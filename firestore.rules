@@ -39,7 +39,8 @@ service cloud.firestore {
              data.uid is string &&
              data.email is string &&
              data.isApproved is bool &&
-             data.role in ['admin', 'user'];
+             data.role in ['admin', 'user'] &&
+             (!('generationCount' in data) || data.generationCount is int);
     }
 
     // ===============================================================
@@ -59,10 +60,15 @@ service cloud.firestore {
       
       // Only admin can update approval status and roles
       // Users can update their own profile but NOT isApproved or role
+      // Users can increment their generationCount
       allow update: if isAdmin() || 
                     (isOwner(userId) && 
                      request.resource.data.isApproved == resource.data.isApproved &&
-                     request.resource.data.role == resource.data.role);
+                     request.resource.data.role == resource.data.role &&
+                     (
+                       !('generationCount' in request.resource.data) || 
+                       request.resource.data.generationCount >= (resource.data.generationCount || 0)
+                     ));
 
       // Only admin can delete users
       allow delete: if isAdmin();

@@ -10,6 +10,7 @@
         "displayName": { "type": "string", "description": "User display name" },
         "role": { "type": "string", "enum": ["admin", "user"], "description": "User role" },
         "isApproved": { "type": "boolean", "description": "Whether the user is approved by admin" },
+        "generationCount": { "type": "integer", "description": "Total number of generations performed by the user", "default": 0 },
         "createdAt": { "type": "string", "format": "date-time", "description": "Account creation time" }
       },
       "required": ["uid", "email", "isApproved"]
