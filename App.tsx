@@ -38,6 +38,12 @@ function AppContent() {
   const [apiErrorType, setApiErrorType] = useState<'API_KEY_LIMIT' | 'API_KEY_INVALID' | null>(null);
 
   useEffect(() => {
+    if (!isConfigured && !['home', 'featureGuide', 'settings'].includes(activeView)) {
+      setActiveView('home');
+    }
+  }, [isConfigured, activeView]);
+
+  useEffect(() => {
     const handleError = (e: any) => {
       setApiErrorType(e.detail);
     };

@@ -4,7 +4,8 @@ import type { View } from '../../App';
 import { TryOnIcon } from '../icons/TryOnIcon';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { SparklesIcon } from '../icons/SparklesIcon';
-import { X, Users, Smile, ShieldCheck, Eraser, ScanFace, Monitor, Info, Key, Settings as SettingsIcon, Clock } from '../icons/LucideIcons';
+import { useApiKey } from '../../hooks/useApiKey';
+import { X, Users, Smile, ShieldCheck, Eraser, ScanFace, Monitor, Info, Key, Settings as SettingsIcon, Clock, Lock } from '../icons/LucideIcons';
 import { HomeIcon } from '../icons/HomeIcon';
 import { MirrorIcon } from '../icons/MirrorIcon';
 
@@ -20,29 +21,35 @@ const NavItem: React.FC<{
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
+  disabled?: boolean;
   onClick: () => void;
-}> = ({ icon, label, isActive, onClick }) => {
+}> = ({ icon, label, isActive, disabled, onClick }) => {
   return (
     <button
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       className={`group flex items-center w-full px-4 py-3 text-sm font-black transition-all duration-200 rounded-2xl mb-2 border-2 border-cartoon-dark shadow-cartoon relative overflow-hidden ${
         isActive 
         ? 'bg-cartoon-blue text-white translate-x-[2px] translate-y-[2px] shadow-cartoon-hover' 
+        : disabled
+        ? 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-75'
         : 'bg-white text-cartoon-dark hover:bg-cartoon-yellow hover:shadow-cartoon-hover'
       }`}
     >
-      <span className={`mr-3 transition-transform ${isActive ? 'scale-110' : 'group-hover:rotate-12'}`}>
+      <span className={`mr-3 transition-transform ${isActive ? 'scale-110' : !disabled ? 'group-hover:rotate-12' : ''}`}>
         {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { 
-          className: `w-5 h-5 ${isActive ? 'text-white' : 'text-cartoon-dark'}`
+          className: `w-5 h-5 ${isActive ? 'text-white' : disabled ? 'text-slate-400' : 'text-cartoon-dark'}`
         })}
       </span>
       <span className="truncate uppercase tracking-tight flex-grow text-left">{label}</span>
+      {disabled && <Lock className="w-4 h-4 ml-2 text-slate-400" />}
     </button>
   );
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isMobileOpen, onMobileClose, isAdmin }) => {
     const { t } = useLanguage();
+    const { isConfigured } = useApiKey();
     
     const menuGroups = [
       ...(isAdmin ? [{
@@ -109,6 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isM
                                     icon={item.icon}
                                     label={item.label}
                                     isActive={activeView === item.id}
+                                    disabled={!isConfigured && !['home', 'featureGuide', 'settings'].includes(item.id)}
                                     onClick={() => handleNavItemClick(item.id as View)}
                                 />
                             ))}
