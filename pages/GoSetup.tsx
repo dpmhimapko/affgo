@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useUsage } from '../contexts/UsageContext';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { StepHeader } from '../components/StepHeader';
 import { ImageUploader } from '../components/ImageUploader';
@@ -10,6 +11,7 @@ import { generateSinglePhotoshootImage } from '../services/geminiService';
 import { Download as DownloadIcon, Eye as ZoomIcon, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, RefreshCw, Clock, Image as ImageIcon, Hand, Users } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
+import { auth, saveToHistory } from '../firebase';
 
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
 type Vibe = 'pink' | 'blue' | 'white' | 'brown' | 'purple' | 'green' | 'black';
@@ -72,6 +74,7 @@ type PhotoshootResult = {
 
 export const GoSetup: React.FC = () => {
     const { t } = useLanguage();
+    const { incrementUsage } = useUsage();
     
     const [sourceImage, setSourceImage] = useState<UploadedImage | null>(null);
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('9:16');
@@ -147,6 +150,16 @@ export const GoSetup: React.FC = () => {
                     next[i] = { id: i, status: 'done', imageUrl: res.imageUrl };
                     return next;
                 });
+                incrementUsage();
+
+                // Save to history
+                if (auth.currentUser && res.imageUrl) {
+                    await saveToHistory(auth.currentUser.uid, {
+                        imageUrl: res.imageUrl,
+                        type: "Go Setup",
+                        prompt: `POV Setup Photoshoot - ${vibe} vibe`
+                    });
+                }
             } catch (err: any) {
                 console.error(`Error slot ${i}:`, err);
                 setResults(prev => {

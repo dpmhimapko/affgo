@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useUsage } from '../contexts/UsageContext';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { StepHeader } from '../components/StepHeader';
 import { ImageUploader } from '../components/ImageUploader';
@@ -40,6 +41,7 @@ type FamilyResult = {
 
 export const GoFamily: React.FC = () => {
     const { t } = useLanguage();
+    const { incrementUsage } = useUsage();
     
     // Asset States
     const [fatherImage, setFatherImage] = useState<UploadedImage | null>(null);
@@ -119,6 +121,7 @@ export const GoFamily: React.FC = () => {
                     next[i] = { id: i, status: 'done', imageUrl: res.imageUrl };
                     return next;
                 });
+                incrementUsage();
 
                 // Save to history
                 if (auth.currentUser && res.imageUrl) {

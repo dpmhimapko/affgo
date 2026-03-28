@@ -43,7 +43,28 @@ const Settings: React.FC = () => {
           <p className="text-gray-600">{t('settings.description')}</p>
         </div>
 
-        <div className="p-8 space-y-8">
+        <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
+          {/* Help Section - MOVED TO TOP */}
+          <div className="pb-6 border-b border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">Butuh Bantuan Mendapatkan API Key?</h3>
+            <div className="max-w-md mx-auto">
+              <a 
+                href="https://drive.google.com/file/d/1gwFxZemZM1VFJHxjI91ggblqGeDyjLMh/view?usp=drive_link" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-6 sm:p-10 bg-red-600 text-white rounded-[2rem] sm:rounded-[2.5rem] shadow-cartoon hover:shadow-cartoon-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all group border-4 border-cartoon-dark"
+              >
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-6 transition-transform">
+                  <svg className="w-10 h-10 sm:w-12 sm:h-12" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 4-8 4z"/>
+                  </svg>
+                </div>
+                <span className="text-xl sm:text-2xl font-black uppercase italic tracking-tight text-center">Tonton Video Tutorial</span>
+                <p className="text-xs sm:text-sm font-bold opacity-90 mt-2 uppercase tracking-widest text-center">Lihat Cara Mendapatkan API Key di Sini</p>
+              </a>
+            </div>
+          </div>
+
           {/* Status Alert */}
           {!isConfigured ? (
             <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800">
@@ -68,30 +89,32 @@ const Settings: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700">
               {t('settings.label')}
             </label>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="password"
                 value={inputKey}
                 onChange={(e) => setInputKey(e.target.value)}
                 placeholder="AIzaSy..."
-                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-mono"
+                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-mono w-full"
               />
-              <button
-                onClick={handleSave}
-                className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2 shrink-0"
-              >
-                <Save size={20} />
-                {t('settings.saveButton')}
-              </button>
-              {isConfigured && (
+              <div className="flex gap-2 w-full sm:w-auto">
                 <button
-                  onClick={handleClear}
-                  className="px-4 py-3 bg-white text-red-600 border border-red-200 rounded-xl font-semibold hover:bg-red-50 transition-colors flex items-center gap-2 shrink-0"
-                  title={t('settings.clearButton')}
+                  onClick={handleSave}
+                  className="flex-1 sm:flex-none px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 shrink-0"
                 >
-                  <Trash2 size={20} />
+                  <Save size={20} />
+                  <span className="sm:inline">{t('settings.saveButton')}</span>
                 </button>
-              )}
+                {isConfigured && (
+                  <button
+                    onClick={handleClear}
+                    className="px-4 py-3 bg-white text-red-600 border border-red-200 rounded-xl font-semibold hover:bg-red-50 transition-colors flex items-center justify-center gap-2 shrink-0"
+                    title={t('settings.clearButton')}
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                )}
+              </div>
             </div>
             {status === 'success' && (
               <motion.p 
@@ -102,28 +125,6 @@ const Settings: React.FC = () => {
                 <CheckCircle2 size={16} /> API Key berhasil disimpan!
               </motion.p>
             )}
-          </div>
-
-          {/* Help Section */}
-          <div className="pt-6 border-t border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Bagaimana cara mendapatkan API Key?</h3>
-            <div className="bg-indigo-50 rounded-xl p-6">
-              <ol className="list-decimal list-inside space-y-3 text-indigo-900">
-                <li>Kunjungi <span className="font-bold">Google AI Studio</span>.</li>
-                <li>Login dengan akun Google Anda.</li>
-                <li>Klik tombol <span className="font-bold">"Get API key"</span> di sidebar kiri.</li>
-                <li>Klik <span className="font-bold">"Create API key in new project"</span>.</li>
-                <li>Salin key yang muncul dan tempelkan di atas.</li>
-              </ol>
-              <a 
-                href="https://aistudio.google.com/app/apikey" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 mt-6 text-indigo-600 font-bold hover:text-indigo-800 transition-colors"
-              >
-                Buka Google AI Studio <ExternalLink size={18} />
-              </a>
-            </div>
           </div>
 
           <div className="text-sm text-gray-500 italic">

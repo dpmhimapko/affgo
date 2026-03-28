@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useUsage } from '../contexts/UsageContext';
 import type { ImageData } from '../types';
 import { ImageUploader } from '../components/ImageUploader';
 import { Spinner } from '../components/Spinner';
@@ -15,6 +16,7 @@ import { auth, saveToHistory } from '../firebase';
 
 export const VirtualTryOn: React.FC = () => {
     const { t } = useLanguage();
+    const { incrementUsage } = useUsage();
     
     // Input State
     const [modelImage, setModelImage] = useState<ImageData | null>(null);
@@ -73,6 +75,7 @@ export const VirtualTryOn: React.FC = () => {
                 aspectRatio
             );
             setResultImage(result.imageUrl);
+            incrementUsage();
             
             // Save to history
             if (auth.currentUser) {

@@ -11,6 +11,7 @@ import { generateCleanImage } from '../services/geminiService';
 import { Download as DownloadIcon, Eye as ZoomIcon, RefreshCw, Image as ImageIcon, Shirt, X, Eraser } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
+import { auth, saveToHistory } from '../firebase';
 
 const PRODUCT_TYPES = ['baju', 'celana', 'tas', 'sepatu'];
 
@@ -54,6 +55,15 @@ export const GoClean: React.FC = () => {
             const res = await generateCleanImage(sourceImage, finalProductType);
             setResultImage(res.imageUrl);
             incrementUsage();
+
+            // Save to history
+            if (auth.currentUser && res.imageUrl) {
+                await saveToHistory(auth.currentUser.uid, {
+                    imageUrl: res.imageUrl,
+                    type: "Go Clean",
+                    prompt: `Clean Background - ${finalProductType}`
+                });
+            }
         } catch (err: any) {
             setError(err.message || 'Gagal membersihkan gambar.');
         } finally {

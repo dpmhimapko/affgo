@@ -11,6 +11,7 @@ import { generateModelVipPhotoshoot } from '../services/geminiService';
 import { Download as DownloadIcon, Eye as ZoomIcon, RefreshCw, Clock, Image as ImageIcon, User, Camera, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, Globe } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
+import { auth, saveToHistory } from '../firebase';
 
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
 
@@ -117,6 +118,15 @@ export const GoModelVipV2: React.FC = () => {
                     return next;
                 });
                 incrementUsage();
+
+                // Save to history
+                if (auth.currentUser && res.imageUrl) {
+                    await saveToHistory(auth.currentUser.uid, {
+                        imageUrl: res.imageUrl,
+                        type: "Go Model VIP V2",
+                        prompt: `VIP Close-up - ${ethnicity} ${focusArea}`
+                    });
+                }
             } catch (err: any) {
                 setResults(prev => {
                     if (!prev) return prev;

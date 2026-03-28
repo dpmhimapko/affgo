@@ -120,7 +120,6 @@ export const AdminDashboard: React.FC = () => {
                 <th className="p-4 font-black uppercase text-xs tracking-widest">User</th>
                 <th className="p-4 font-black uppercase text-xs tracking-widest">Status</th>
                 <th className="p-4 font-black uppercase text-xs tracking-widest">Role</th>
-                <th className="p-4 font-black uppercase text-xs tracking-widest">Usage</th>
                 <th className="p-4 font-black uppercase text-xs tracking-widest">Aktivitas</th>
                 <th className="p-4 font-black uppercase text-xs tracking-widest text-right">Aksi</th>
               </tr>
@@ -157,14 +156,6 @@ export const AdminDashboard: React.FC = () => {
                     }`}>
                       {user.role}
                     </span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <div className="px-3 py-1 bg-cartoon-yellow border-2 border-cartoon-dark rounded-lg font-black text-xs shadow-cartoon-sm">
-                        {user.generationCount || 0}
-                      </div>
-                      <span className="text-[10px] font-bold text-cartoon-dark/40 uppercase">Gens</span>
-                    </div>
                   </td>
                   <td className="p-4">
                     <div className="text-[10px] font-black uppercase text-cartoon-dark/60">Terakhir Aktif:</div>

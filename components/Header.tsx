@@ -49,15 +49,15 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               <MenuIcon />
             </button>
 
-            <div className="flex items-center gap-3 group cursor-pointer select-none">
-              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-cartoon-blue border-2 border-cartoon-dark shadow-cartoon group-hover:rotate-6 transition-transform">
-                <AppLogoIcon className="w-8 h-8 text-white" />
+            <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer select-none">
+              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-cartoon-blue border-2 border-cartoon-dark shadow-cartoon group-hover:rotate-6 transition-transform shrink-0">
+                <AppLogoIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-2xl font-black tracking-tighter text-cartoon-dark leading-none italic uppercase">
+              <div className="flex flex-col min-w-0">
+                <span className="text-lg sm:text-2xl font-black tracking-tighter text-cartoon-dark leading-none italic uppercase truncate">
                   AFFILIATE <span className="text-cartoon-blue">GO</span>
                 </span>
-                <span className="text-[10px] font-black uppercase text-cartoon-blue/60 tracking-widest leading-none mt-1">by Ahdan</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase text-cartoon-blue/60 tracking-widest leading-none mt-0.5 sm:mt-1">by Ahdan</span>
               </div>
             </div>
           </div>

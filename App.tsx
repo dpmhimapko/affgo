@@ -22,7 +22,7 @@ import { Login } from './components/Login';
 import { ApprovalPending } from './components/ApprovalPending';
 import { Spinner } from './components/Spinner';
 import { useApiKey } from './hooks/useApiKey';
-import { AlertTriangle as AlertCircle, X } from './components/icons/LucideIcons';
+import { AlertTriangle as AlertCircle, X, ExternalLink } from './components/icons/LucideIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKids' | 'goFamily' | 'goModelVip' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'adminDashboard' | 'settings';
@@ -157,20 +157,28 @@ function AppContent() {
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           >
-            <div className="bg-white dark:bg-slate-800 border-4 border-cartoon-dark rounded-[2.5rem] p-8 max-w-md w-full shadow-cartoon-lg relative">
-              <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-3xl flex items-center justify-center mx-auto mb-6 border-4 border-cartoon-dark shadow-cartoon">
-                <AlertCircle className="w-10 h-10 text-red-600 dark:text-red-400" />
+            <div className="bg-white dark:bg-slate-800 border-4 border-cartoon-dark rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 max-w-md w-full shadow-cartoon-lg relative">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-100 dark:bg-red-900/30 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 border-4 border-cartoon-dark shadow-cartoon">
+                <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-red-600 dark:text-red-400" />
               </div>
               
-              <h3 className="text-2xl font-black text-cartoon-dark dark:text-white text-center mb-4 uppercase italic tracking-tight">
+              <h3 className="text-xl sm:text-2xl font-black text-cartoon-dark dark:text-white text-center mb-3 sm:mb-4 uppercase italic tracking-tight">
                 {apiErrorType === 'API_KEY_LIMIT' ? t('errors.apiKeyLimit') : t('errors.apiKeyInvalid')}
               </h3>
               
-              <p className="text-slate-600 dark:text-slate-300 text-center mb-8 font-bold leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 text-center mb-6 sm:mb-8 font-bold leading-relaxed text-sm sm:text-base">
                 {apiErrorType === 'API_KEY_LIMIT' ? t('errors.apiKeyLimitDesc') : t('errors.apiKeyInvalidDesc')}
               </p>
               
               <div className="flex flex-col gap-3">
+                <a
+                  href="https://drive.google.com/file/d/1gwFxZemZM1VFJHxjI91ggblqGeDyjLMh/view?usp=drive_link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3 px-6 bg-red-600 text-white font-black rounded-2xl border-4 border-cartoon-dark shadow-cartoon hover:shadow-cartoon-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase italic text-center text-sm"
+                >
+                  Tonton Video Tutorial
+                </a>
                 <button
                   onClick={() => {
                     handleNavigate('settings');
@@ -197,30 +205,40 @@ function AppContent() {
             exit={{ opacity: 0, y: -50 }}
             className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4"
           >
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-lg flex items-start gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
-                <AlertCircle size={20} />
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4 shadow-lg flex items-start gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-amber-100 rounded-lg text-amber-600 shrink-0">
+                <AlertCircle size={18} className="sm:w-5 sm:h-5" />
               </div>
-              <div className="flex-1">
-                <h4 className="font-bold text-amber-900">{t('settings.status.missing')}</h4>
-                <p className="text-sm text-amber-800 mb-2">
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-amber-900 text-sm sm:text-base truncate">{t('settings.status.missing')}</h4>
+                <p className="text-xs sm:text-sm text-amber-800 mb-2 line-clamp-2">
                   {t('settings.status.missingDesc')}
                 </p>
-                <button
-                  onClick={() => {
-                    handleNavigate('settings');
-                    setShowApiKeyWarning(false);
-                  }}
-                  className="text-sm font-bold text-amber-900 underline hover:text-amber-700"
-                >
-                  {t('sidebar.settings')}
-                </button>
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                  <button
+                    onClick={() => {
+                      handleNavigate('settings');
+                      setShowApiKeyWarning(false);
+                    }}
+                    className="text-xs sm:text-sm font-bold text-amber-900 underline hover:text-amber-700"
+                  >
+                    {t('sidebar.settings')}
+                  </button>
+                  <a
+                    href="https://drive.google.com/file/d/1gwFxZemZM1VFJHxjI91ggblqGeDyjLMh/view?usp=drive_link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs sm:text-sm font-bold text-red-600 underline hover:text-red-800 flex items-center gap-1"
+                  >
+                    Tutorial <ExternalLink size={12} className="sm:w-3.5 sm:h-3.5" />
+                  </a>
+                </div>
               </div>
               <button
                 onClick={() => setShowApiKeyWarning(false)}
-                className="p-1 hover:bg-amber-100 rounded-lg text-amber-400 transition-colors"
+                className="p-1 hover:bg-amber-100 rounded-lg text-amber-400 transition-colors shrink-0"
               >
-                <X size={18} />
+                <X size={16} className="sm:w-[18px] sm:h-[18px]" />
               </button>
             </div>
           </motion.div>

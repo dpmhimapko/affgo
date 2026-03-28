@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useUsage } from '../contexts/UsageContext';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { StepHeader } from '../components/StepHeader';
 import { ImageUploader } from '../components/ImageUploader';
@@ -41,6 +42,7 @@ const getAestheticPrompts = (carpetColor: CarpetColor) => [
 
 export const GoAesthetic: React.FC = () => {
     const { t } = useLanguage();
+    const { incrementUsage } = useUsage();
     
     // State
     const [sourceImage, setSourceImage] = useState<UploadedImage | null>(null);
@@ -111,6 +113,7 @@ export const GoAesthetic: React.FC = () => {
                     next[i] = { id: i, status: 'done', imageUrl: res.imageUrl };
                     return next;
                 });
+                incrementUsage();
 
                 // Save to history
                 if (auth.currentUser && res.imageUrl) {

@@ -25,6 +25,7 @@ import {
 } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
+import { auth, saveToHistory } from '../firebase';
 
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
 type Angle = 'eye-level' | 'high-angle' | 'close-up' | 'dutch-angle' | 'detail';
@@ -145,6 +146,15 @@ export const GoCermin: React.FC = () => {
                     return next;
                 });
                 incrementUsage();
+
+                // Save to history
+                if (auth.currentUser && res.imageUrl) {
+                    await saveToHistory(auth.currentUser.uid, {
+                        imageUrl: res.imageUrl,
+                        type: "Go Cermin",
+                        prompt: `Mirror Photoshoot - ${angle}`
+                    });
+                }
             } catch (err: any) {
                 console.error(`Error slot ${i}:`, err);
                 setResults(prev => {

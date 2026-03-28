@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useUsage } from '../contexts/UsageContext';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { StepHeader } from '../components/StepHeader';
 import { ImageUploader } from '../components/ImageUploader';
@@ -59,6 +60,7 @@ type KidsResult = {
 
 export const GoKids: React.FC = () => {
     const { t } = useLanguage();
+    const { incrementUsage } = useUsage();
     
     // Asset State
     const [productImage, setProductImage] = useState<UploadedImage | null>(null);
@@ -134,6 +136,7 @@ export const GoKids: React.FC = () => {
                     next[i] = { id: i, status: 'done', imageUrl: res.imageUrl };
                     return next;
                 });
+                incrementUsage();
 
                 // Save to history
                 if (auth.currentUser && res.imageUrl) {
