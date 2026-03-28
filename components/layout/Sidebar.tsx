@@ -21,28 +21,25 @@ const NavItem: React.FC<{
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
-  disabled?: boolean;
+  isLocked?: boolean;
   onClick: () => void;
-}> = ({ icon, label, isActive, disabled, onClick }) => {
+}> = ({ icon, label, isActive, isLocked, onClick }) => {
   return (
     <button
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
+      onClick={onClick}
       className={`group flex items-center w-full px-4 py-3 text-sm font-black transition-all duration-200 rounded-2xl mb-2 border-2 border-cartoon-dark shadow-cartoon relative overflow-hidden ${
         isActive 
         ? 'bg-cartoon-blue text-white translate-x-[2px] translate-y-[2px] shadow-cartoon-hover' 
-        : disabled
-        ? 'bg-slate-200 text-slate-400 cursor-not-allowed opacity-75'
         : 'bg-white text-cartoon-dark hover:bg-cartoon-yellow hover:shadow-cartoon-hover'
       }`}
     >
-      <span className={`mr-3 transition-transform ${isActive ? 'scale-110' : !disabled ? 'group-hover:rotate-12' : ''}`}>
+      <span className={`mr-3 transition-transform ${isActive ? 'scale-110' : 'group-hover:rotate-12'}`}>
         {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { 
-          className: `w-5 h-5 ${isActive ? 'text-white' : disabled ? 'text-slate-400' : 'text-cartoon-dark'}`
+          className: `w-5 h-5 ${isActive ? 'text-white' : 'text-cartoon-dark'}`
         })}
       </span>
       <span className="truncate uppercase tracking-tight flex-grow text-left">{label}</span>
-      {disabled && <Lock className="w-4 h-4 ml-2 text-slate-400" />}
+      {isLocked && <Lock className="w-4 h-4 ml-2 text-cartoon-blue animate-pulse" />}
     </button>
   );
 };
@@ -116,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isM
                                     icon={item.icon}
                                     label={item.label}
                                     isActive={activeView === item.id}
-                                    disabled={!isConfigured && !['home', 'featureGuide', 'settings'].includes(item.id)}
+                                    isLocked={!isConfigured && !['home', 'featureGuide', 'settings', 'adminDashboard'].includes(item.id)}
                                     onClick={() => handleNavItemClick(item.id as View)}
                                 />
                             ))}
