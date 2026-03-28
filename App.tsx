@@ -203,9 +203,9 @@ function AppContent() {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4"
+            className="fixed top-24 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md z-50"
           >
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4 shadow-lg flex items-start gap-2 sm:gap-3">
+            <div className="bg-amber-50 border-4 border-cartoon-dark rounded-2xl p-3 sm:p-4 shadow-cartoon-lg flex items-start gap-2 sm:gap-3">
               <div className="p-1.5 sm:p-2 bg-amber-100 rounded-lg text-amber-600 shrink-0">
                 <AlertCircle size={18} className="sm:w-5 sm:h-5" />
               </div>

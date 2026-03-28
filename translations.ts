@@ -60,6 +60,7 @@ export const translations: Translations = {
     placeholder: "Masukkan API Key (AIza...)",
     saveButton: "Simpan API Key",
     clearButton: "Hapus Key",
+    expiryNotice: "⚠️ PENTING: API Key ini biasanya hanya aktif selama 1 JAM sejak dibuat. Jika sudah lewat 1 jam atau muncul error 'Quota Exceeded', segera ganti dengan API Key baru.\n\n💡 TIPS PRO:\n• Manfaatkan 1 jam ini semaksimal mungkin untuk generate konten sebanyak-banyaknya!\n• Jika limit habis sebelum 1 jam, segera ganti dengan API Key baru.\n• Jangan biarkan aplikasi menganggur, gaskeun terus mumpung Key masih aktif!",
     status: {
       saved: "API Key Tersimpan",
       cleared: "API Key Dihapus",
@@ -73,7 +74,7 @@ export const translations: Translations = {
     },
     help: {
       text: "Belum punya API Key?",
-      link: "Dapatkan di Google AI Studio"
+      link: "Tonton Video Tutorial"
     }
   },
   homePage: {

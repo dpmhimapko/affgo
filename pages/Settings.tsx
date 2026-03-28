@@ -66,6 +66,16 @@ const Settings: React.FC = () => {
           </div>
 
           {/* Status Alert */}
+          <div className="flex items-start gap-3 p-5 bg-cartoon-blue/10 border-4 border-cartoon-dark rounded-3xl text-cartoon-dark shadow-cartoon">
+            <div className="p-2 bg-cartoon-blue rounded-xl text-white shrink-0 shadow-cartoon-sm">
+              <AlertCircle size={24} />
+            </div>
+            <div>
+              <p className="font-black uppercase italic text-sm tracking-widest mb-2 text-cartoon-blue">Aturan Main API Key</p>
+              <p className="text-sm font-bold leading-relaxed whitespace-pre-line">{t('settings.expiryNotice')}</p>
+            </div>
+          </div>
+
           {!isConfigured ? (
             <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800">
               <AlertCircle className="shrink-0 mt-0.5" size={20} />
