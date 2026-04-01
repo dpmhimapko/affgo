@@ -8,6 +8,14 @@ import HomePage from './pages/HomePage';
 import GoAesthetic from './pages/GoAesthetic';
 import GoKids from './pages/GoKids';
 import GoFamily from './pages/GoFamily';
+import GoKamarAesthetic from './pages/GoKamarAesthetic';
+import GoSofa from './pages/GoSofa';
+import GoSofaV2 from './pages/GoSofaV2';
+import GoHanger from './pages/GoHanger';
+import GoHangerV2 from './pages/GoHangerV2';
+import GoKain from './pages/GoKain';
+import GoSepatu from './pages/GoSepatu';
+import GoSepatuV2 from './pages/GoSepatuV2';
 import { GoModelVip } from './pages/GoModelVip';
 import GoCermin from './pages/GoCermin';
 import GoClean from './pages/GoClean';
@@ -25,7 +33,7 @@ import { useApiKey } from './hooks/useApiKey';
 import { AlertTriangle as AlertCircle, X, ExternalLink } from './components/icons/LucideIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKids' | 'goFamily' | 'goModelVip' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'adminDashboard' | 'settings';
+export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKamarAesthetic' | 'goSofa' | 'goSofaV2' | 'goHanger' | 'goHangerV2' | 'goKain' | 'goSepatu' | 'goSepatuV2' | 'goKids' | 'goFamily' | 'goModelVip' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'adminDashboard' | 'settings';
 
 function AppContent() {
   const { t } = useLanguage();
@@ -116,6 +124,14 @@ function AppContent() {
         case 'virtualTryOn': return <VirtualTryOn />;
         case 'goModelVip': return <GoModelVip />;
         case 'goAesthetic': return <GoAesthetic />;
+        case 'goKamarAesthetic': return <GoKamarAesthetic />;
+        case 'goSofa': return <GoSofa />;
+        case 'goSofaV2': return <GoSofaV2 />;
+        case 'goHanger': return <GoHanger />;
+        case 'goHangerV2': return <GoHangerV2 />;
+        case 'goKain': return <GoKain />;
+        case 'goSepatu': return <GoSepatu />;
+        case 'goSepatuV2': return <GoSepatuV2 />;
         case 'goKids': return <GoKids />;
         case 'goFamily': return <GoFamily />;
         case 'goCermin': return <GoCermin />;

@@ -49,6 +49,14 @@ export const translations: Translations = {
     goCermin: "Go Cermin",
     goClean: "Go Clean",
     goFamily: "Go Family",
+    goKamarAesthetic: "Go Kamar Aesthetic",
+    goSofa: "Go Sofa",
+    goSofaV2: "Go Sofa v2",
+    goHanger: "Go Hanger",
+    goHangerV2: "Go Hanger v2",
+    goKain: "Go Kain",
+    goSepatu: "Go Sepatu",
+    goSepatuV2: "Go Sepatu v2",
     goSetup: "Go Setup",
     settings: "API Key",
   },
@@ -840,6 +848,190 @@ export const translations: Translations = {
     generateButton: "Buat 6 Foto Studio",
     errors: {
         noImage: "Harap unggah gambar terlebih dahulu."
+    }
+  },
+  goSepatu: {
+    page: {
+      title: "Go Sepatu",
+      description: "Buat foto katalog sepatu atau sandal dengan gaya lifestyle yang natural, menampilkan produk saat dipakai dan dipegang secara bersamaan."
+    },
+    sections: {
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      highAngle: "Top View / Semi-Top View",
+      closeUp: "Close Up",
+      detail: "Detail Hiasan",
+      dutchAngle: "Miring (Dutch Angle)"
+    },
+    generateButton: "✨ Buat Foto Go Sepatu",
+    errors: {
+      noImage: "Silakan unggah foto produk terlebih dahulu."
+    }
+  },
+  goSepatuV2: {
+    page: {
+      title: "Go Sepatu v2",
+      description: "Buat foto katalog sepatu atau sandal dengan gaya 'mencoba produk' di atas lantai abu-abu yang elegan."
+    },
+    sections: {
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      highAngle: "Top View (Dari Atas)",
+      closeUp: "Close Up",
+      detail: "Detail Tekstur",
+      dutchAngle: "Miring (Dutch Angle)"
+    },
+    generateButton: "✨ Buat Foto Go Sepatu v2",
+    errors: {
+      noImage: "Silakan unggah foto produk terlebih dahulu."
+    }
+  },
+  goKain: {
+    page: {
+      title: "Go Kain",
+      description: "Buat foto flatlay estetik dengan produk di atas kain terang, lengkap dengan properti kacamata, majalah, dan laptop."
+    },
+    sections: {
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      highAngle: "Top View (Flatlay)",
+      closeUp: "Close Up",
+      detail: "Detail Tekstur",
+      dutchAngle: "Miring (Dutch Angle)"
+    },
+    generateButton: "✨ Buat Foto Go Kain",
+    errors: {
+      noImage: "Silakan unggah foto produk terlebih dahulu."
+    }
+  },
+  goHangerV2: {
+    page: {
+      title: "Go Hanger v2",
+      description: "Buat foto katalog produk yang digantung simetris di rak besi hitam minimalis dengan latar belakang clean dan modern."
+    },
+    sections: {
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      highAngle: "Top View",
+      closeUp: "Close Up",
+      detail: "Detail Bahan",
+      dutchAngle: "Miring (Dutch Angle)"
+    },
+    generateButton: "✨ Buat Foto Go Hanger v2",
+    errors: {
+      noImage: "Silakan unggah foto produk terlebih dahulu."
+    }
+  },
+  goHanger: {
+    page: {
+      title: "Go Hanger",
+      description: "Buat foto katalog produk yang digantung di rak besi dengan sentuhan interaktif tangan yang memegang lengan pakaian."
+    },
+    sections: {
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      highAngle: "Top View",
+      closeUp: "Close Up",
+      detail: "Detail Bahan",
+      dutchAngle: "Miring (Dutch Angle)"
+    },
+    generateButton: "✨ Buat Foto Go Hanger",
+    errors: {
+      noImage: "Silakan unggah foto produk terlebih dahulu."
+    }
+  },
+  goSofaV2: {
+    page: {
+      title: "Go Sofa v2",
+      description: "Buat foto katalog produk yang diletakkan rapi di atas sofa terang menggunakan hanger, lengkap dengan properti majalah fashion yang artistik."
+    },
+    sections: {
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      highAngle: "Top View / Semi-Top View",
+      closeUp: "Close Up",
+      detail: "Detail Tekstur",
+      dutchAngle: "Miring (Dutch Angle)"
+    },
+    generateButton: "✨ Buat Foto Go Sofa v2",
+    errors: {
+      noImage: "Silakan unggah foto produk terlebih dahulu."
+    }
+  },
+  goSofa: {
+    page: {
+      title: "Go Sofa",
+      description: "Hasilkan foto katalog produk yang cozy dengan setting sofa linen beige yang hangat, lengkap dengan properti fashion yang artistik."
+    },
+    sections: {
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      highAngle: "Flatlay / Semi-Top View",
+      closeUp: "Close Up",
+      detail: "Detail Tekstur",
+      dutchAngle: "Miring (Dutch Angle)"
+    },
+    generateButton: "✨ Buat Foto Go Sofa",
+    errors: {
+      noImage: "Silakan unggah foto produk terlebih dahulu."
+    }
+  },
+  goKamarAesthetic: {
+    page: {
+      title: "Go Kamar Aesthetic",
+      description: "Ubah foto produkmu menjadi foto katalog estetik dengan setting kamar minimalis yang modern dan pencahayaan alami yang menawan."
+    },
+    sections: {
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      highAngle: "Dari Atas (Flat Lay)",
+      closeUp: "Close Up",
+      detail: "Detail Tekstur",
+      dutchAngle: "Miring (Dutch Angle)"
+    },
+    generateButton: "✨ Buat Foto Kamar Estetik",
+    errors: {
+      noImage: "Silakan unggah foto produk terlebih dahulu."
     }
   },
   goAesthetic: {
