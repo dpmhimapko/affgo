@@ -48,7 +48,7 @@ export const ApprovalPending: React.FC = () => {
         
         <div className="space-y-4">
           <a
-            href="https://wa.me/62882002152004?text=Halo%20Admin%20AHDAN,%20saya%20ingin%20meminta%20persetujuan%20untuk%20akun%20saya:%20"
+            href={`https://wa.me/62882002152004?text=${encodeURIComponent(`Halo Admin AHDAN, saya ingin meminta persetujuan untuk akun saya: ${user?.email || ''}`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full py-4 bg-cartoon-blue border-4 border-cartoon-dark rounded-2xl font-black text-white shadow-cartoon hover:shadow-cartoon-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center gap-3"
