@@ -69,7 +69,7 @@ export const GoModelPremium: React.FC = () => {
         
         const basePrompt = `ULTRA-REALISTIC FASHION PHOTOGRAPHY: A professional ${selectedEthnicity} ${gender} model ${hijabText} in a modern minimalist indoor room with a warm and aesthetic vibe. 
         Wall: Clean white with a large arch design in the center, providing an elegant and soft impression. 
-        Background: White wall shelf with simple decorations (small photo frame, decorative letters spelling "Nayza", etc.). 
+        Background: White wall shelf with simple decorations (small photo frame, decorative letters, etc.). 
         Lighting: Warm tone hidden behind the shelf, creating a cozy, soft, and comfortable atmosphere. 
         Furniture: White drawers or desk with a clean and modern design. 
         Floor: Beige carpet. 
@@ -78,7 +78,7 @@ export const GoModelPremium: React.FC = () => {
         Pose: Mirror selfie, relaxed but upright, one hand holding a phone covering the face. 
         Vibe: Natural, modern, aesthetic like an influencer. 
         The model is wearing the EXACT clothing item from the input image. 
-        High fidelity textures, cinematic lighting, 8k resolution, commercial fashion aesthetic. No watermarks.`;
+        High fidelity textures, cinematic lighting, 8k resolution, commercial fashion aesthetic. No text, no watermarks.`;
 
         for (let i = 0; i < 4; i++) {
             setResults(prev => {
