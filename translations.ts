@@ -1162,7 +1162,12 @@ export const translations: Translations = {
       options: {
         title: "Opsi Model",
         description: "Sesuaikan tampilan model premium Anda."
-      }
+      },
+      faceVisibility: "Visibilitas Wajah"
+    },
+    faceOptions: {
+      obstructed: "Wajah Terhalang HP",
+      visible: "Wajah Terlihat Jelas"
     },
     generateButton: "Buat Foto Premium"
   },

@@ -37,6 +37,7 @@ export const GoModelPremium: React.FC = () => {
     const [gender, setGender] = useState('female');
     const [ethnicity, setEthnicity] = useState('indonesia');
     const [isHijab, setIsHijab] = useState(false);
+    const [faceVisibility, setFaceVisibility] = useState<'obstructed' | 'visible'>('obstructed');
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('9:16');
 
     const [results, setResults] = useState<PremiumResult[] | null>(null);
@@ -67,15 +68,19 @@ export const GoModelPremium: React.FC = () => {
         const selectedEthnicity = ETHNICITY_OPTIONS.find(e => e.id === ethnicity)?.prompt || 'Indonesian';
         const hijabText = isHijab ? 'wearing a stylish hijab' : '';
         
+        const faceVisibilityAction = faceVisibility === 'obstructed'
+            ? "holding a modern smartphone that covers their face while taking a mirror selfie."
+            : "holding a modern smartphone to the side, taking a mirror selfie with their full face visible in the reflection.";
+
         const basePrompt = `ULTRA-REALISTIC FASHION PHOTOGRAPHY: A professional ${selectedEthnicity} ${gender} model ${hijabText} in a modern minimalist indoor room with a warm and aesthetic vibe. 
         Wall: Clean white with a large arch design in the center, providing an elegant and soft impression. 
         Background: White wall shelf with simple decorations (small photo frame, decorative letters, etc.). 
         Lighting: Warm tone hidden behind the shelf, creating a cozy, soft, and comfortable atmosphere. 
         Furniture: White drawers or desk with a clean and modern design. 
         Floor: Beige carpet. 
-        Overall vibe: Aesthetic, calm, Instagrammable, soft neutral colors. 
+        Overall vibe: Aesthetic, calm, Instagramable, soft neutral colors. 
         Model style: Feminine, calm, elegant. 
-        Pose: Mirror selfie, relaxed but upright, one hand holding a phone covering the face. 
+        Pose: Mirror selfie, relaxed but upright, ${faceVisibilityAction}
         Vibe: Natural, modern, aesthetic like an influencer. 
         The model is wearing the EXACT clothing item from the input image. 
         High fidelity textures, cinematic lighting, 8k resolution, commercial fashion aesthetic. No text, no watermarks.`;
@@ -180,6 +185,18 @@ export const GoModelPremium: React.FC = () => {
                                     </button>
                                 </div>
                             )}
+
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1">{t('goModelPremium.sections.faceVisibility')}</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button onClick={() => setFaceVisibility('obstructed')} className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${faceVisibility === 'obstructed' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-slate-200 text-gray-500'}`}>
+                                        <span className="text-[10px] font-bold">{t('goModelPremium.faceOptions.obstructed')}</span>
+                                    </button>
+                                    <button onClick={() => setFaceVisibility('visible')} className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${faceVisibility === 'visible' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-slate-200 text-gray-500'}`}>
+                                        <span className="text-[10px] font-bold">{t('goModelPremium.faceOptions.visible')}</span>
+                                    </button>
+                                </div>
+                            </div>
 
                             <div>
                                 <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1">Rasio Aspek</label>
