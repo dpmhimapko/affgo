@@ -1102,16 +1102,22 @@ export const generateCleanImage = async (
     return callGemini(async () => {
         const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
         
-        const prompt = `Act as an expert e-commerce image editor. Your task is to transform this photo of a product being worn by a model into a clean, product-only 'ghost mannequin' or 'flat lay' style image.
+        const prompt = `Act as a high-end commercial photo retoucher. Your absolute priority is to isolate the '${productType}' and REMOVE ALL HUMAN ELEMENTS.
 
-**CRITICAL INSTRUCTIONS:**
-1.  **Identify the Product:** The main product to isolate is the '${productType}'.
-2.  **Remove the Model:** You MUST completely remove the human model. This includes the head, torso, arms, hands, legs, and any visible skin or body parts.
-3.  **Remove the Background:** Erase the entire original background, including walls, floors, and any other objects.
-4.  **Final Output:** The output MUST be ONLY the '${productType}' product, presented as if it's on a ghost mannequin or laid flat, against a perfectly solid, clean white background (#FFFFFF).
-5.  **Preserve Product Shape:** Reconstruct any parts of the product that might be obscured by the model (like the inside of a collar), but maintain the product's original shape and details.
+**STRICT REQUIREMENTS:**
+1.  **ZERO HUMAN TOLERANCE:** You MUST remove 100% of the human model. This includes:
+    -   NO fingers or hands holding the product.
+    -   NO hair, neck, or skin visible at the collar or sleeves.
+    -   NO feet or ankles visible at the bottom of pants or in shoes.
+    -   NO face, ears, or limbs.
+2.  **GHOST MANNEQUIN STYLE:** The '${productType}' should appear as if it is floating or on an invisible mannequin. 
+3.  **RECONSTRUCTION:** If a hand was covering a part of the ${productType}, you MUST realistically reconstruct that part of the fabric/material to look natural.
+4.  **BACKGROUND:** The final background MUST be a solid, pure, studio-white (#FFFFFF) with NO shadows from the original scene.
+5.  **PRODUCT INTEGRITY:** Maintain the exact color, texture, and branding of the '${productType}'.
 
-Do not include any part of the human model in the final image. The result should be a professional, catalog-ready product shot on a pure white background.`;
+**NEGATIVE:** No human skin, no hands, no fingers, no hair, no face, no feet, no background objects, no shadows.
+
+The final image must contain ONLY the product. If any part of a human remains, the task is a failure. Create a professional, clean, e-commerce catalog image.`;
 
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
