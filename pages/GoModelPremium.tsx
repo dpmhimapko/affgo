@@ -69,8 +69,8 @@ export const GoModelPremium: React.FC = () => {
         const hijabText = isHijab ? 'wearing a stylish hijab' : '';
         
         const faceVisibilityAction = faceVisibility === 'obstructed'
-            ? "holding a modern smartphone directly in front of their face, completely covering their face while taking a mirror selfie."
-            : "holding a modern smartphone to the side at chest or shoulder level, taking a mirror selfie. The model's entire face MUST be completely visible and NOT obstructed by the phone or hand.";
+            ? "holding a modern smartphone that covers their face while taking a mirror selfie."
+            : "holding a modern smartphone to the side, taking a mirror selfie with their full face visible in the reflection.";
 
         const basePrompt = `ULTRA-REALISTIC FASHION PHOTOGRAPHY: A professional ${selectedEthnicity} ${gender} model ${hijabText} in a modern minimalist indoor room with a warm and aesthetic vibe. 
         Wall: Clean white with a large arch design in the center, providing an elegant and soft impression. 
@@ -85,8 +85,6 @@ export const GoModelPremium: React.FC = () => {
         The model is wearing the EXACT clothing item from the input image. 
         High fidelity textures, cinematic lighting, 8k resolution, commercial fashion aesthetic. No text, no watermarks.`;
 
-        const negativePrompt = faceVisibility === 'visible' ? "phone covering face, hand covering face, face obstruction, blurry face, distorted face" : "";
-
         for (let i = 0; i < 4; i++) {
             setResults(prev => {
                 if (!prev) return prev;
@@ -96,7 +94,7 @@ export const GoModelPremium: React.FC = () => {
             });
 
             try {
-                const res = await generateSinglePhotoshootImage(productImage, basePrompt, negativePrompt, aspectRatio);
+                const res = await generateSinglePhotoshootImage(productImage, basePrompt, "", aspectRatio);
                 
                 setResults(prev => {
                     if (!prev) return prev;
