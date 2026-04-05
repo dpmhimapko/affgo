@@ -893,13 +893,19 @@ export const generateSetupImage = async (product: UploadedImage, background: Upl
 
 // =================== Go Photoshoot ===================
 
-export const generateSinglePhotoshootImage = async (source: UploadedImage, fullPrompt: string, negativePrompt: string, aspectRatio: string) => {
+export const generateSinglePhotoshootImage = async (source: UploadedImage | UploadedImage[], fullPrompt: string, negativePrompt: string, aspectRatio: string) => {
     return callGemini(async () => {
         const ai = new GoogleGenAI({ apiKey: getEffectiveApiKey() });
         // Strong instruction to maintain product identity
+        const sources = Array.isArray(source) ? source : [source];
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
-            contents: [{ parts: [{ text: `${PRODUCT_PRESERVATION_PROMPT} ${fullPrompt}. Negative: ${negativePrompt}` }, toPart(source)] }],
+            contents: [{ 
+                parts: [
+                    { text: `${PRODUCT_PRESERVATION_PROMPT} ${fullPrompt}. Negative: ${negativePrompt}` }, 
+                    ...sources.map(s => toPart(s))
+                ] 
+            }],
             config: {
                 imageConfig: { aspectRatio: aspectRatio as any },
                 responseModalities: [Modality.IMAGE]

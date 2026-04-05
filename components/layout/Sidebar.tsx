@@ -67,8 +67,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isM
         title: "Photoshoot",
         items: [
           { id: 'goModelVip', label: t('sidebar.goModelVip'), icon: <ShieldCheck /> },
+          { id: 'goModelPremium', label: t('sidebar.goModelPremium'), icon: <ShieldCheck /> },
           { id: 'goSelfieVip', label: t('sidebar.goSelfieVip'), icon: <ScanFace /> },
           { id: 'goSetup', label: t('sidebar.goSetup'), icon: <Monitor /> },
+          { id: 'goSetupV2', label: "Go Setup V2", icon: <Monitor /> },
           { id: 'virtualTryOn', label: t('sidebar.virtualTryOn'), icon: <TryOnIcon /> },
           { id: 'goKids', label: t('sidebar.goKids'), icon: <Smile /> },
           { id: 'goFamily', label: t('sidebar.goFamily'), icon: <Users /> },

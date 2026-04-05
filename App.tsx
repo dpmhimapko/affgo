@@ -17,10 +17,12 @@ import GoKain from './pages/GoKain';
 import GoSepatu from './pages/GoSepatu';
 import GoSepatuV2 from './pages/GoSepatuV2';
 import { GoModelVip } from './pages/GoModelVip';
+import { GoModelPremium } from './pages/GoModelPremium';
 import GoCermin from './pages/GoCermin';
 import GoClean from './pages/GoClean';
 import { GoSelfieVip } from './pages/GoSelfieVip';
 import { GoSetup } from './pages/GoSetup';
+import { GoSetupV2 } from './pages/GoSetupV2';
 import { History } from './pages/History';
 import { FeatureGuide } from './pages/FeatureGuide';
 import { AdminDashboard } from './pages/AdminDashboard';
@@ -33,7 +35,7 @@ import { useApiKey } from './hooks/useApiKey';
 import { AlertTriangle as AlertCircle, X, ExternalLink } from './components/icons/LucideIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKamarAesthetic' | 'goSofa' | 'goSofaV2' | 'goHanger' | 'goHangerV2' | 'goKain' | 'goSepatu' | 'goSepatuV2' | 'goKids' | 'goFamily' | 'goModelVip' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'adminDashboard' | 'settings';
+export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKamarAesthetic' | 'goSofa' | 'goSofaV2' | 'goHanger' | 'goHangerV2' | 'goKain' | 'goSepatu' | 'goSepatuV2' | 'goKids' | 'goFamily' | 'goModelVip' | 'goModelPremium' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'goSetupV2' | 'adminDashboard' | 'settings';
 
 function AppContent() {
   const { t } = useLanguage();
@@ -123,6 +125,7 @@ function AppContent() {
         case 'featureGuide': return <FeatureGuide />;
         case 'virtualTryOn': return <VirtualTryOn />;
         case 'goModelVip': return <GoModelVip />;
+        case 'goModelPremium': return <GoModelPremium />;
         case 'goAesthetic': return <GoAesthetic />;
         case 'goKamarAesthetic': return <GoKamarAesthetic />;
         case 'goSofa': return <GoSofa />;
@@ -138,6 +141,7 @@ function AppContent() {
         case 'goClean': return <GoClean />;
         case 'goSelfieVip': return <GoSelfieVip />;
         case 'goSetup': return <GoSetup />;
+        case 'goSetupV2': return <GoSetupV2 />;
         case 'adminDashboard': return <AdminDashboard />;
         case 'settings': return <Settings />;
         default: return <HomePage />;

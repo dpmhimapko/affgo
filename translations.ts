@@ -19,6 +19,7 @@ export const translations: Translations = {
     goModel: "Go Model",
     goModelVip: "Go Model VIP",
     goModelVipV2: "Go Model VIP V2",
+    goModelPremium: "Go Model PREMIUM",
     goDetail: "Go Detail",
     goSelfieVip: "Go Selfie VIP",
     goFashion: "Go Fashion",
@@ -1104,11 +1105,13 @@ export const translations: Translations = {
       brown: "Cozy Brown",
       purple: "Purple Galaxy",
       green: "Natural Green",
-      black: "Dark Stealth"
+      black: "Dark Stealth",
+      aesthetic: "Warm Aesthetic"
     },
     handOptions: {
       one: "1 Tangan",
-      two: "2 Tangan"
+      two: "2 Tangan",
+      compare: "Bandingkan (2 Produk)"
     },
     genders: {
       female: "Wanita",
@@ -1118,9 +1121,50 @@ export const translations: Translations = {
       subtleWiggle: "Goyang Halus",
       gentleTilt: "Miring Halus",
       slowRotation: "Putar Lambat",
-      stillLife: "Diam Estetik"
+      stillLife: "Diam Estetik",
+      cinematicShowcase: "Cinematic Showcase"
     },
     generateButton: "Buat Foto Setup"
+  },
+  goSetupV2: {
+    page: {
+      title: "Go Setup V2",
+      description: "Pindahkan produk skincare Anda ke atas meja setup yang estetik tanpa dipegang tangan. Produk diletakkan terlentang untuk hasil maksimal."
+    },
+    sections: {
+      vibe: {
+        title: "Pilih Vibe Warna",
+        description: "Sesuaikan suasana warna setup dengan produkmu."
+      },
+      motion: {
+        title: "Gerakan Video",
+        description: "Pilih jenis gerakan untuk prompt video."
+      }
+    },
+    motions: {
+      slowZoom: "Zoom Lambat",
+      orbit: "Orbit Kamera",
+      topDown: "Top Down Cinematic",
+      stillLife: "Diam Estetik"
+    },
+    generateButton: "Buat Foto Setup V2"
+  },
+  goModelPremium: {
+    page: {
+      title: "Go Model PREMIUM",
+      description: "Hasilkan foto model estetik di ruangan minimalis modern dengan nuansa hangat. Cocok untuk konten influencer yang elegan dan Instagramable."
+    },
+    sections: {
+      upload: {
+        title: "Upload Produk",
+        description: "Upload foto pakaian atau produk fashion Anda."
+      },
+      options: {
+        title: "Opsi Model",
+        description: "Sesuaikan tampilan model premium Anda."
+      }
+    },
+    generateButton: "Buat Foto Premium"
   },
   goCermin: {
     page: {

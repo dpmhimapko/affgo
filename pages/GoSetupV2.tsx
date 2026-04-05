@@ -4,78 +4,74 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useUsage } from '../contexts/UsageContext';
 import { FeatureHeader } from '../components/FeatureHeader';
 import { StepHeader } from '../components/StepHeader';
-import { ImageUploader } from '../components/ImageUploader';
 import { Spinner } from '../components/Spinner';
 import { UploadedImage } from '../types';
 import { generateSinglePhotoshootImage } from '../services/geminiService';
-import { Download as DownloadIcon, Eye as ZoomIcon, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, RefreshCw, Clock, Image as ImageIcon, Hand, Users, Copy as CopyIcon, Check as CheckIcon } from '../components/icons/LucideIcons';
+import { Download as DownloadIcon, Eye as ZoomIcon, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, RefreshCw, Clock, Image as ImageIcon, Copy as CopyIcon, Check as CheckIcon, Upload as UploadIcon, X as CloseIcon } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
 import { auth, saveToHistory } from '../firebase';
 
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
 type Vibe = 'pink' | 'blue' | 'white' | 'brown' | 'purple' | 'green' | 'black' | 'aesthetic';
-type HandCount = '1' | '2' | 'compare';
-type Gender = 'female' | 'male';
-type Motion = 'subtleWiggle' | 'gentleTilt' | 'slowRotation' | 'stillLife' | 'cinematicShowcase';
+type Motion = 'slowZoom' | 'orbit' | 'topDown' | 'stillLife';
 
 const VIBE_OPTIONS: { id: Vibe; nameKey: string; color: string; prompt: string; }[] = [
     { 
         id: 'blue', 
         nameKey: 'goSetup.vibes.blue', 
         color: 'bg-blue-400',
-        prompt: 'Aesthetic pastel blue and white tech setup, soft and clean minimalist futuristic vibe. Left: monitor with soft pastel blue wallpaper, white mechanical keyboard, soft LED digital clock. Table: white desk, white mouse, unique soft blue pastel mousepad. Right: game controllers (pastel blue/white), game console, white-blue headphones. Wall: posters, cards, geometric soft blue LED lines. Overall soft pastel lighting.' 
+        prompt: 'Aesthetic pastel blue and white tech setup, soft and clean minimalist futuristic vibe. Table: white desk, soft blue pastel mousepad. Overall soft pastel lighting.' 
     },
     { 
         id: 'pink', 
         nameKey: 'goSetup.vibes.pink', 
         color: 'bg-pink-400',
-        prompt: 'Aesthetic pastel pink and white gaming setup, cute and soft aesthetic. Left: monitor with soft pink heart wallpaper, pastel pink mechanical keyboard, cute soft digital clock. Table: white desk, pastel pink mouse, soft pink heart mousepad. Right: soft plushies, pastel pink controllers, pink headphones. Wall: cute posters, soft fairy lights, pastel pink neon heart. Overall soft pastel pink glow.' 
+        prompt: 'Aesthetic pastel pink and white gaming setup, cute and soft aesthetic. Table: white desk, soft pink heart mousepad. Overall soft pastel pink glow.' 
     },
     { 
         id: 'white', 
         nameKey: 'goSetup.vibes.white', 
         color: 'bg-slate-100',
-        prompt: 'Clean minimalist soft white setup with bright natural soft lighting, all-white desk, white keyboard, and simple soft white decor. Left: monitor with abstract soft white wallpaper, white mechanical keyboard, white clock. Table: white desk, white mouse, white mousepad. Right: white speakers, white headphones, white plant pot. Wall: white acoustic panels, very soft white LED strips. High-key soft pastel atmosphere.' 
+        prompt: 'Clean minimalist soft white setup with bright natural soft lighting, all-white desk. High-key soft pastel atmosphere.' 
     },
     { 
         id: 'brown', 
         nameKey: 'goSetup.vibes.brown', 
         color: 'bg-amber-800',
-        prompt: 'Cozy soft brown and pastel beige setup with warm light wooden desk, soft amber lighting, books, and vintage accessories. Left: monitor with soft nature wallpaper, light wooden keyboard, vintage clock. Table: light wood desk, soft beige leather mousepad, cup of coffee. Right: books, vintage camera, soft warm lamp. Wall: wooden shelves, dried flowers, soft warm amber LED.' 
+        prompt: 'Cozy soft brown and pastel beige setup with warm light wooden desk, soft amber lighting. Overall soft warm vibe.' 
     },
     { 
         id: 'purple', 
         nameKey: 'goSetup.vibes.purple', 
         color: 'bg-purple-500',
-        prompt: 'Dreamy pastel purple and lavender setup with soft neon purple lighting, pastel purple keyboard, space themed monitor with soft colors. Left: monitor with soft lavender galaxy wallpaper, pastel purple backlit keyboard, soft neon clock. Table: white desk, soft purple RGB mousepad. Right: futuristic gadgets, pastel purple headphones, crystalline decor. Wall: soft purple neon strips, space posters.' 
+        prompt: 'Dreamy pastel purple and lavender setup with soft neon purple lighting. Overall soft lavender glow.' 
     },
     { 
         id: 'green', 
         nameKey: 'goSetup.vibes.green', 
         color: 'bg-green-500',
-        prompt: 'Natural soft mint green setup with many indoor plants, light wood desk, soft natural lighting, and botanical decor. Left: monitor with soft forest wallpaper, white keyboard, mint-themed accessories. Table: light wood desk, soft mint green mousepad. Right: terrariums, soft green headphones, nature books. Wall: ivy plants, botanical prints. Overall soft pastel green vibe.' 
+        prompt: 'Natural soft mint green setup with many indoor plants, light wood desk, soft natural lighting. Overall soft pastel green vibe.' 
     },
     { 
         id: 'black', 
         nameKey: 'goSetup.vibes.black', 
         color: 'bg-black',
-        prompt: 'Soft matte black stealth setup with subtle pastel RGB lighting, black mechanical keyboard, and minimalist black accessories. Left: monitor with dark abstract wallpaper but soft contrast, black keyboard. Table: black desk, black mouse, black mousepad. Right: black speakers, black headphones, dark gadgets. Wall: dark acoustic foam, subtle soft pastel LED strips to create a soft dark aesthetic.' 
+        prompt: 'Soft matte black stealth setup with subtle pastel RGB lighting. Overall soft dark aesthetic.' 
     },
     { 
         id: 'aesthetic', 
         nameKey: 'goSetup.vibes.aesthetic', 
         color: 'bg-orange-100',
-        prompt: 'Warm and soft aesthetic minimalist desk decoration. Center: pleated cream table lamp emitting warm yellow light, creating a cozy atmosphere. Right of lamp: transparent glass vase with three white tulips. Front of lamp: white bubble candle on a small round wooden base. Left: small photo frame on a mini wooden easel. Bottom right: small pink glass container with lid. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall warm, calm, and Instagramable aesthetic.' 
+        prompt: 'Warm and soft aesthetic minimalist desk decoration. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall warm, calm, and Instagramable aesthetic.' 
     }
 ];
 
 const MOTION_OPTIONS: { id: Motion; nameKey: string; prompt: string; }[] = [
-    { id: 'subtleWiggle', nameKey: 'goSetup.motions.subtleWiggle', prompt: 'subtle wiggle movement' },
-    { id: 'gentleTilt', nameKey: 'goSetup.motions.gentleTilt', prompt: 'gentle tilting motion' },
-    { id: 'slowRotation', nameKey: 'goSetup.motions.slowRotation', prompt: 'slow rotation' },
-    { id: 'stillLife', nameKey: 'goSetup.motions.stillLife', prompt: 'still life cinematic shot' },
-    { id: 'cinematicShowcase', nameKey: 'goSetup.motions.cinematicShowcase', prompt: 'cinematic product showcase: start with subtle wiggle, then move the product closer to the camera to show it, then subtle wiggle again. Keep the front of the product facing the camera at all times, DO NOT rotate or flip to show the back.' }
+    { id: 'slowZoom', nameKey: 'goSetupV2.motions.slowZoom', prompt: 'slow cinematic zoom in towards the product' },
+    { id: 'orbit', nameKey: 'goSetupV2.motions.orbit', prompt: 'cinematic orbit camera movement around the product' },
+    { id: 'topDown', nameKey: 'goSetupV2.motions.topDown', prompt: 'cinematic top-down camera movement, slowly zooming out' },
+    { id: 'stillLife', nameKey: 'goSetupV2.motions.stillLife', prompt: 'still life cinematic shot' }
 ];
 
 type PhotoshootResult = {
@@ -86,17 +82,14 @@ type PhotoshootResult = {
     error?: string;
 };
 
-export const GoSetup: React.FC = () => {
+export const GoSetupV2: React.FC = () => {
     const { t } = useLanguage();
     const { incrementUsage } = useUsage();
     
-    const [sourceImage, setSourceImage] = useState<UploadedImage | null>(null);
-    const [secondImage, setSecondImage] = useState<UploadedImage | null>(null);
+    const [sourceImages, setSourceImages] = useState<UploadedImage[]>([]);
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('9:16');
-    const [vibe, setVibe] = useState<Vibe>('blue');
-    const [handCount, setHandCount] = useState<HandCount>('1');
-    const [gender, setGender] = useState<Gender>('female');
-    const [motion, setMotion] = useState<Motion>('subtleWiggle');
+    const [vibe, setVibe] = useState<Vibe>('aesthetic');
+    const [motion, setMotion] = useState<Motion>('slowZoom');
     const [copiedId, setCopiedId] = useState<number | null>(null);
     
     const [results, setResults] = useState<PhotoshootResult[] | null>(null);
@@ -107,30 +100,32 @@ export const GoSetup: React.FC = () => {
     const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
     const [zoomImage, setZoomImage] = useState<string | null>(null);
 
-    const handleImageUpload = (dataUrl: string, mimeType: string) => {
-        const base64 = dataUrl.split(',')[1];
-        setSourceImage({ base64, mimeType, name: 'source' });
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+
+        const newImages: UploadedImage[] = [];
+        Array.from(files).forEach((file: File) => {
+            if (sourceImages.length + newImages.length >= 4) return;
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = (reader.result as string).split(',')[1];
+                setSourceImages(prev => [...prev, { base64, mimeType: file.type, name: file.name }]);
+            };
+            reader.readAsDataURL(file);
+        });
         setResults(null);
         setError(null);
-        setProgress(0);
     };
 
-    const handleSecondImageUpload = (dataUrl: string, mimeType: string) => {
-        const base64 = dataUrl.split(',')[1];
-        setSecondImage({ base64, mimeType, name: 'second' });
+    const removeImage = (index: number) => {
+        setSourceImages(prev => prev.filter((_, i) => i !== index));
         setResults(null);
-        setError(null);
-        setProgress(0);
     };
 
     const handleGenerate = async () => {
-        if (!sourceImage) {
+        if (sourceImages.length === 0) {
             setError(t('goAesthetic.errors.noImage'));
-            return;
-        }
-
-        if (handCount === 'compare' && !secondImage) {
-            setError("Silakan upload produk kedua untuk perbandingan.");
             return;
         }
 
@@ -146,7 +141,7 @@ export const GoSetup: React.FC = () => {
 
         const selectedVibe = VIBE_OPTIONS.find(v => v.id === vibe);
         const selectedMotion = MOTION_OPTIONS.find(m => m.id === motion);
-        const negativePrompt = " Ensure there is absolutely no text, writing, words, numbers, or watermarks in the final image. No stickers, high fidelity textures.";
+        const negativePrompt = " Ensure there is absolutely no text, writing, words, numbers, or watermarks in the final image. No stickers, high fidelity textures. NO HANDS, NO PEOPLE, NO FINGERS.";
 
         for (let i = 0; i < 4; i++) {
             setResults(prev => {
@@ -157,25 +152,14 @@ export const GoSetup: React.FC = () => {
             });
 
             try {
-                const handText = handCount === '1' ? 'one hand' : handCount === '2' ? 'two hands' : 'two hands, one in each hand';
-                const personText = gender === 'female' ? 'a woman' : 'a man';
-                const clothingText = vibe === 'blue' ? 'a blue knitted sweater' : 
-                                    vibe === 'pink' ? 'a pink knitted sweater' : 
-                                    vibe === 'white' ? 'a white linen sleeve' : 
-                                    vibe === 'brown' ? 'a brown wool sweater' : 
-                                    vibe === 'purple' ? 'a purple velvet sleeve' : 
-                                    vibe === 'green' ? 'a sage green sweater' : 
-                                    vibe === 'aesthetic' ? 'a cream-colored soft knitted sweater' : 'a black techwear sleeve';
+                // Use source images in sequence, or repeat if less than 4
+                const sourceIdx = i % sourceImages.length;
+                const currentSource = sourceImages[sourceIdx];
 
-                let fullPrompt = "";
-                if (handCount === 'compare') {
-                    fullPrompt = `ULTRA-REALISTIC CLOSE-UP POV PRODUCT COMPARISON PHOTOGRAPHY: The camera angle is a close-up shot from a slightly angled front view, positioned at eye-level. Two different products from the source images are being compared. One product is held in the left hand and the other product is held in the right hand of ${personText} wearing ${clothingText}. CRITICAL: The hands MUST enter the frame from the bottom-center, creating a true first-person POV perspective. Both products fill a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
-                } else {
-                    fullPrompt = `ULTRA-REALISTIC CLOSE-UP POV PRODUCT PHOTOGRAPHY: The camera angle is a close-up shot from a slightly angled front view, positioned at eye-level or slightly higher with a minor top-down angle. The EXACT product from the source image is the absolute central focus, held by ${handText} of ${personText} wearing ${clothingText}. CRITICAL: The hands MUST enter the frame strictly from the bottom-center and front of the image, creating a true first-person POV perspective. DO NOT have hands entering from the left or right sides. The product fills a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the product's surfaces, making it look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
-                }
+                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a skincare item from the source image, placed lying down on its back (terlentang) on a clean, aesthetic surface. The camera angle is a top-down or slightly angled front view, positioned at eye-level with the product. The EXACT product from the source image is the absolute central focus. NO HANDS, NO PEOPLE, NO FINGERS are visible in the frame. The product fills a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the product's surfaces, making it look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
 
                 const res = await generateSinglePhotoshootImage(
-                    handCount === 'compare' ? [sourceImage, secondImage!] : sourceImage,
+                    currentSource,
                     fullPrompt,
                     "",
                     aspectRatio
@@ -195,8 +179,8 @@ export const GoSetup: React.FC = () => {
                 if (auth.currentUser && res.imageUrl) {
                     await saveToHistory(auth.currentUser.uid, {
                         imageUrl: res.imageUrl,
-                        type: "Go Setup",
-                        prompt: `POV Setup Photoshoot - ${vibe} vibe`
+                        type: "Go Setup V2",
+                        prompt: `Flatlay Setup Photoshoot - ${vibe} vibe`
                     });
                 }
             } catch (err: any) {
@@ -231,15 +215,14 @@ export const GoSetup: React.FC = () => {
     const handleDownload = (url: string, index: number) => {
         const link = document.createElement('a');
         link.href = url;
-        link.download = `go-setup-${vibe}-${index + 1}-${Date.now()}.png`;
+        link.download = `go-setup-v2-${vibe}-${index + 1}-${Date.now()}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
 
     const handleReset = () => {
-        setSourceImage(null);
-        setSecondImage(null);
+        setSourceImages([]);
         setResults(null);
         setError(null);
         setIsGenerating(false);
@@ -259,8 +242,8 @@ export const GoSetup: React.FC = () => {
     return (
         <div className="w-full">
             <FeatureHeader
-                title={t('goSetup.page.title')}
-                description={t('goSetup.page.description')}
+                title={t('goSetupV2.page.title')}
+                description={t('goSetupV2.page.description')}
             />
 
             <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -270,31 +253,29 @@ export const GoSetup: React.FC = () => {
                         <StepHeader 
                             step={1} 
                             title={t('sections.upload.title')}
-                            description={handCount === 'compare' ? "Upload Produk 1" : t('uploader.productLabel')}
+                            description="Upload hingga 4 foto produk skincare Anda."
                         />
-                        <ImageUploader 
-                            onImageUpload={handleImageUpload}
-                            uploadedImage={sourceImage ? `data:${sourceImage.mimeType};base64,${sourceImage.base64}` : null}
-                            label={t('uploader.imageLabel')}
-                            labelKey="uploader.productLabel"
-                        />
-                    </div>
-
-                    {handCount === 'compare' && (
-                        <div className="pt-4">
-                            <StepHeader 
-                                step={1} 
-                                title="Upload Produk 2"
-                                description="Produk kedua untuk dibandingkan."
-                            />
-                            <ImageUploader 
-                                onImageUpload={handleSecondImageUpload}
-                                uploadedImage={secondImage ? `data:${secondImage.mimeType};base64,${secondImage.base64}` : null}
-                                label={t('uploader.imageLabel')}
-                                labelKey="uploader.productLabel"
-                            />
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                            {sourceImages.map((img, idx) => (
+                                <div key={idx} className="relative aspect-square rounded-xl border-2 border-cartoon-dark overflow-hidden group">
+                                    <img src={`data:${img.mimeType};base64,${img.base64}`} alt="preview" className="w-full h-full object-cover" />
+                                    <button 
+                                        onClick={() => removeImage(idx)}
+                                        className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <CloseIcon className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            ))}
+                            {sourceImages.length < 4 && (
+                                <label className="aspect-square rounded-xl border-2 border-dashed border-cartoon-dark flex flex-col items-center justify-center cursor-pointer hover:bg-cartoon-yellow/10 transition-colors">
+                                    <UploadIcon className="w-6 h-6 text-cartoon-dark mb-1" />
+                                    <span className="text-[10px] font-black uppercase">Tambah</span>
+                                    <input type="file" multiple className="sr-only" onChange={handleImageUpload} accept="image/*" />
+                                </label>
+                            )}
                         </div>
-                    )}
+                    </div>
 
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
@@ -324,58 +305,8 @@ export const GoSetup: React.FC = () => {
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
                             step={3} 
-                            title={t('goSetup.sections.handCount.title')}
-                            description={t('goSetup.sections.handCount.description')}
-                        />
-                        <div className="grid grid-cols-2 gap-2">
-                            {(['1', '2', 'compare'] as HandCount[]).map(count => (
-                                <button 
-                                    key={count} 
-                                    onClick={() => setHandCount(count)} 
-                                    disabled={isGenerating}
-                                    className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
-                                        handCount === count 
-                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
-                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
-                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    <Hand className="w-4 h-4" />
-                                    <span className="text-[10px] font-black uppercase">{t('goSetup.handOptions.' + (count === '1' ? 'one' : count === '2' ? 'two' : 'compare'))}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
-                        <StepHeader 
-                            step={4} 
-                            title={t('goSetup.sections.gender.title')}
-                            description={t('goSetup.sections.gender.description')}
-                        />
-                        <div className="grid grid-cols-2 gap-2">
-                            {(['female', 'male'] as Gender[]).map(g => (
-                                <button 
-                                    key={g} 
-                                    onClick={() => setGender(g)} 
-                                    disabled={isGenerating}
-                                    className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
-                                        gender === g 
-                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
-                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
-                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    <Users className="w-4 h-4" />
-                                    <span className="text-sm font-bold">{t('goSetup.genders.' + g)}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
-                        <StepHeader 
-                            step={5} 
-                            title={t('goSetup.sections.vibe.title')}
-                            description={t('goSetup.sections.vibe.description')}
+                            title={t('goSetupV2.sections.vibe.title')}
+                            description={t('goSetupV2.sections.vibe.description')}
                         />
                         <div className="grid grid-cols-2 gap-2">
                             {VIBE_OPTIONS.map(opt => (
@@ -398,9 +329,9 @@ export const GoSetup: React.FC = () => {
 
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
-                            step={6} 
-                            title={t('goSetup.sections.motion.title')}
-                            description={t('goSetup.sections.motion.description')}
+                            step={4} 
+                            title={t('goSetupV2.sections.motion.title')}
+                            description={t('goSetupV2.sections.motion.description')}
                         />
                         <div className="grid grid-cols-2 gap-2">
                             {MOTION_OPTIONS.map(opt => (
@@ -424,7 +355,7 @@ export const GoSetup: React.FC = () => {
                     <div className="pt-4">
                         <button
                             onClick={handleGenerate}
-                            disabled={isGenerating || !sourceImage}
+                            disabled={isGenerating || sourceImages.length === 0}
                             className="w-full group relative flex justify-center items-center py-4 px-6 rounded-2xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-300 transform hover:-translate-y-0.5 overflow-hidden"
                         >
                             {isGenerating ? (
@@ -433,7 +364,7 @@ export const GoSetup: React.FC = () => {
                                     <span className="tracking-wide">Rendering ({progress}/4)...</span>
                                 </div>
                             ) : (
-                                <span className="tracking-wide">{t('goSetup.generateButton')}</span>
+                                <span className="tracking-wide">{t('goSetupV2.generateButton')}</span>
                             )}
                         </button>
                         
@@ -456,9 +387,9 @@ export const GoSetup: React.FC = () => {
                 <section className="flex-1 w-full bg-white dark:bg-gray-900/50 backdrop-blur-2xl p-6 md:p-8 rounded-[2.5rem] border border-white/40 dark:border-white/5 shadow-sm min-h-[500px]">
                     <div className="flex items-center justify-between mb-8 border-b border-gray-100 dark:border-white/10 pb-6">
                         <div>
-                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none">Setup Gallery</h3>
+                            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none">Setup V2 Gallery</h3>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 font-medium">
-                                {isGenerating ? `Mengerjakan...` : `4 Variasi Foto Setup di Ruangan Pilihan`}
+                                {isGenerating ? `Mengerjakan...` : `4 Variasi Foto Setup Flatlay`}
                             </p>
                         </div>
                         {isGenerating && (
@@ -545,4 +476,4 @@ export const GoSetup: React.FC = () => {
     );
 };
 
-export default GoSetup;
+export default GoSetupV2;
