@@ -1192,6 +1192,7 @@ export const translations: Translations = {
       celana: "Celana",
       tas: "Tas",
       sepatu: "Sepatu",
+      full_outfit: "Full Outfit",
       lainnya: "Lainnya..."
     },
     customProductPlaceholder: "cth., 'Topi', 'Jam tangan'",

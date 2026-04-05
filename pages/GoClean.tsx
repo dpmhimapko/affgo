@@ -13,7 +13,7 @@ import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
 import { auth, saveToHistory } from '../firebase';
 
-const PRODUCT_TYPES = ['baju', 'celana', 'tas', 'sepatu'];
+const PRODUCT_TYPES = ['baju', 'celana', 'tas', 'sepatu', 'full_outfit'];
 
 export const GoClean: React.FC = () => {
     const { t } = useLanguage();
