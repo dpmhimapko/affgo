@@ -18,6 +18,7 @@ import GoSepatu from './pages/GoSepatu';
 import GoSepatuV2 from './pages/GoSepatuV2';
 import { GoModelVip } from './pages/GoModelVip';
 import { GoModelPremium } from './pages/GoModelPremium';
+import { GoModelPremiumV2 } from './pages/GoModelPremiumV2';
 import GoCermin from './pages/GoCermin';
 import GoClean from './pages/GoClean';
 import { GoSelfieVip } from './pages/GoSelfieVip';
@@ -35,7 +36,7 @@ import { useApiKey } from './hooks/useApiKey';
 import { AlertTriangle as AlertCircle, X, ExternalLink } from './components/icons/LucideIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKamarAesthetic' | 'goSofa' | 'goSofaV2' | 'goHanger' | 'goHangerV2' | 'goKain' | 'goSepatu' | 'goSepatuV2' | 'goKids' | 'goFamily' | 'goModelVip' | 'goModelPremium' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'goSetupV2' | 'adminDashboard' | 'settings';
+export type View = 'home' | 'featureGuide' | 'virtualTryOn' | 'goAesthetic' | 'goKamarAesthetic' | 'goSofa' | 'goSofaV2' | 'goHanger' | 'goHangerV2' | 'goKain' | 'goSepatu' | 'goSepatuV2' | 'goKids' | 'goFamily' | 'goModelVip' | 'goModelPremium' | 'goModelPremiumV2' | 'goCermin' | 'goClean' | 'goSelfieVip' | 'goSetup' | 'goSetupV2' | 'adminDashboard' | 'settings';
 
 function AppContent() {
   const { t } = useLanguage();
@@ -126,6 +127,7 @@ function AppContent() {
         case 'virtualTryOn': return <VirtualTryOn />;
         case 'goModelVip': return <GoModelVip />;
         case 'goModelPremium': return <GoModelPremium />;
+        case 'goModelPremiumV2': return <GoModelPremiumV2 />;
         case 'goAesthetic': return <GoAesthetic />;
         case 'goKamarAesthetic': return <GoKamarAesthetic />;
         case 'goSofa': return <GoSofa />;

@@ -20,6 +20,7 @@ export const translations: Translations = {
     goModelVip: "Go Model VIP",
     goModelVipV2: "Go Model VIP V2",
     goModelPremium: "Go Model PREMIUM",
+    goModelPremiumV2: "Go Model PREMIUM V2",
     goDetail: "Go Detail",
     goSelfieVip: "Go Selfie VIP",
     goFashion: "Go Fashion",
@@ -1170,6 +1171,23 @@ export const translations: Translations = {
       visible: "Wajah Terlihat Jelas"
     },
     generateButton: "Buat Foto Premium"
+  },
+  goModelPremiumV2: {
+    page: {
+      title: "Go Model PREMIUM V2",
+      description: "Hasilkan foto model estetik tanpa kepala (neck down) di ruangan minimalis modern. Fokus pada detail pakaian dan gaya tubuh."
+    },
+    sections: {
+      upload: {
+        title: "Upload Produk",
+        description: "Upload foto pakaian atau produk fashion Anda."
+      },
+      options: {
+        title: "Opsi Model",
+        description: "Sesuaikan tampilan model tanpa kepala Anda."
+      }
+    },
+    generateButton: "Buat Foto Premium V2"
   },
   goCermin: {
     page: {
