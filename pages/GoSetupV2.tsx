@@ -14,6 +14,7 @@ import { auth, saveToHistory } from '../firebase';
 
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
 type Vibe = 'pink' | 'blue' | 'white' | 'brown' | 'purple' | 'green' | 'black' | 'aesthetic';
+type Angle = 'eyeLevel' | 'topDownClose' | 'topDownFar';
 type Motion = 'slowZoom' | 'orbit' | 'topDown' | 'stillLife';
 
 const VIBE_OPTIONS: { id: Vibe; nameKey: string; color: string; prompt: string; }[] = [
@@ -74,6 +75,12 @@ const MOTION_OPTIONS: { id: Motion; nameKey: string; prompt: string; }[] = [
     { id: 'stillLife', nameKey: 'goSetupV2.motions.stillLife', prompt: 'still life cinematic shot' }
 ];
 
+const ANGLE_OPTIONS: { id: Angle; nameKey: string; prompt: string; }[] = [
+    { id: 'eyeLevel', nameKey: 'goSetupV2.angles.eyeLevel', prompt: 'The camera angle is a slightly angled front view, positioned at eye-level with the product.' },
+    { id: 'topDownClose', nameKey: 'goSetupV2.angles.topDownClose', prompt: 'The camera angle is a top-down view from above, but positioned close to the product (not far away), focusing on the top surface and details.' },
+    { id: 'topDownFar', nameKey: 'goSetupV2.angles.topDownFar', prompt: 'The camera angle is a top-down view from a distance, showing the product and its surrounding aesthetic setup.' }
+];
+
 type PhotoshootResult = {
     id: number;
     status: 'waiting' | 'loading' | 'done' | 'error';
@@ -89,6 +96,7 @@ export const GoSetupV2: React.FC = () => {
     const [sourceImages, setSourceImages] = useState<UploadedImage[]>([]);
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('9:16');
     const [vibe, setVibe] = useState<Vibe>('aesthetic');
+    const [angle, setAngle] = useState<Angle>('eyeLevel');
     const [motion, setMotion] = useState<Motion>('slowZoom');
     const [copiedId, setCopiedId] = useState<number | null>(null);
     
@@ -140,6 +148,7 @@ export const GoSetupV2: React.FC = () => {
         setResults(initialResults);
 
         const selectedVibe = VIBE_OPTIONS.find(v => v.id === vibe);
+        const selectedAngle = ANGLE_OPTIONS.find(a => a.id === angle);
         const selectedMotion = MOTION_OPTIONS.find(m => m.id === motion);
         const negativePrompt = " Ensure there is absolutely no text, writing, words, numbers, or watermarks in the final image. No stickers, high fidelity textures. NO HANDS, NO PEOPLE, NO FINGERS.";
 
@@ -156,7 +165,7 @@ export const GoSetupV2: React.FC = () => {
                 const sourceIdx = i % sourceImages.length;
                 const currentSource = sourceImages[sourceIdx];
 
-                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a skincare item from the source image, placed lying down on its back (terlentang) on a clean, aesthetic surface. The camera angle is a top-down or slightly angled front view, positioned at eye-level with the product. The EXACT product from the source image is the absolute central focus. NO HANDS, NO PEOPLE, NO FINGERS are visible in the frame. The product fills a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the product's surfaces, making it look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
+                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a skincare item from the source image, placed lying down on its back (terlentang) on a clean, aesthetic surface. ${selectedAngle?.prompt} The EXACT product from the source image is the absolute central focus. NO HANDS, NO PEOPLE, NO FINGERS are visible in the frame. The product fills a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the product's surfaces, making it look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
 
                 const res = await generateSinglePhotoshootImage(
                     currentSource,
@@ -330,6 +339,31 @@ export const GoSetupV2: React.FC = () => {
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
                             step={4} 
+                            title={t('goSetupV2.sections.angle.title')}
+                            description={t('goSetupV2.sections.angle.description')}
+                        />
+                        <div className="grid grid-cols-1 gap-2">
+                            {ANGLE_OPTIONS.map(opt => (
+                                <button 
+                                    key={opt.id} 
+                                    onClick={() => setAngle(opt.id)} 
+                                    disabled={isGenerating}
+                                    className={`p-3 rounded-xl flex items-center justify-start px-4 gap-3 border transition-all ${
+                                        angle === opt.id 
+                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
+                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <ZoomIcon className="w-4 h-4" />
+                                    <span className="text-sm font-bold">{t(opt.nameKey)}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
+                        <StepHeader 
+                            step={5} 
                             title={t('goSetupV2.sections.motion.title')}
                             description={t('goSetupV2.sections.motion.description')}
                         />

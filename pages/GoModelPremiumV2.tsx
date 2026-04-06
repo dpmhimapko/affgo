@@ -68,20 +68,26 @@ export const GoModelPremiumV2: React.FC = () => {
         const hijabText = isHijab ? 'wearing a stylish hijab' : '';
         
         const basePrompt = `ULTRA-REALISTIC FASHION PHOTOGRAPHY: A professional ${selectedEthnicity} ${gender} model ${hijabText} in a modern minimalist indoor room.
-        CRITICAL: The photo is a NECK-DOWN shot. The model's head and face are NOT visible. The frame starts from the neck downwards.
         
-        Wall: Clean white with a large arch design in the center. 
-        Background: White wall shelf with simple decorations (small photo frame, decorative letters, etc.). 
-        Lighting: Warm tone hidden behind the shelf, creating a cozy, soft, and comfortable atmosphere. 
-        Furniture: White drawers or desk with a clean and modern design. 
-        Floor: Beige carpet. 
-        Overall vibe: Aesthetic, calm, Instagramable, soft neutral colors. 
-        Model style: Feminine, calm, elegant. 
-        Pose: Standing relaxed, one hand might be holding a phone as if taking a mirror selfie but the head is cut off from the frame.
-        Vibe: Natural, modern, aesthetic like an influencer. 
+        CRITICAL COMPOSITION: This is a STRICTLY NECK-DOWN (HEADLESS) shot. The camera frame MUST start from the base of the neck downwards. The head, face, eyes, and hair are COMPLETELY EXCLUDED from the frame.
+        
+        Pose & Framing:
+        - Framing: Neck-down composition, focusing on the torso, arms, and legs.
+        - Pose: The model stands upright with a relaxed yet elegant posture.
+        - Hands: One hand is raised towards where the face would be (as if adjusting a hijab or holding a phone), while the other hand rests naturally at the side.
+        - Legs: Positioned slightly apart with one leg slightly forward, creating a flowy and dynamic silhouette.
+        - Camera: Eye-level crop, perfectly parallel to the body, capturing from the shoulders down to the feet.
+        
+        Setting:
+        - Wall: Off-white or light grey minimalist wall.
+        - Furniture: A clean white drawer/cabinet on the left.
+        - Decorations: A large framed abstract line art picture leaning against the wall on the floor.
+        - Floor: Smooth grey concrete or matte floor.
+        
         The model is wearing the EXACT clothing item from the input image. 
-        High fidelity textures, cinematic lighting, 8k resolution, commercial fashion aesthetic. No text, no watermarks.
-        NEGATIVE: No head, no face, no eyes, no mouth, no hair above the neck.`;
+        High fidelity textures, natural soft indoor lighting, 8k resolution, commercial fashion aesthetic. No text, no watermarks.
+        
+        NEGATIVE: full head, face, eyes, hair, nose, mouth, chin, forehead, ears, top of head, entire head visible.`;
 
         for (let i = 0; i < 4; i++) {
             setResults(prev => {
@@ -92,7 +98,7 @@ export const GoModelPremiumV2: React.FC = () => {
             });
 
             try {
-                const res = await generateSinglePhotoshootImage(productImage, basePrompt, "head, face, eyes, hair", aspectRatio);
+                const res = await generateSinglePhotoshootImage(productImage, basePrompt, "head, face, eyes, hair, nose, mouth, chin, forehead, ears, full head", aspectRatio);
                 
                 setResults(prev => {
                     if (!prev) return prev;

@@ -1137,10 +1137,19 @@ export const translations: Translations = {
         title: "Pilih Vibe Warna",
         description: "Sesuaikan suasana warna setup dengan produkmu."
       },
+      angle: {
+        title: "Sudut Kamera",
+        description: "Pilih sudut pengambilan foto untuk produk Anda."
+      },
       motion: {
         title: "Gerakan Video",
         description: "Pilih jenis gerakan untuk prompt video."
       }
+    },
+    angles: {
+      eyeLevel: "Sejajar Mata",
+      topDownClose: "Dari Atas (Dekat)",
+      topDownFar: "Dari Atas (Jauh)"
     },
     motions: {
       slowZoom: "Zoom Lambat",
