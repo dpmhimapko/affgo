@@ -98,6 +98,7 @@ export const GoSetupV3: React.FC = () => {
     const [motion, setMotion] = useState<Motion>('slowZoom');
     const [socksType, setSocksType] = useState<'none' | 'black' | 'white' | 'matching'>('none');
     const [bottomType, setBottomType] = useState<'shortLeggings' | 'longLeggings' | 'jeans' | 'bareLegs'>('longLeggings');
+    const [skinTone, setSkinTone] = useState<'white' | 'whiteHairy' | 'brown'>('white');
     const [copiedId, setCopiedId] = useState<number | null>(null);
     
     const [results, setResults] = useState<PhotoshootResult[] | null>(null);
@@ -175,7 +176,12 @@ export const GoSetupV3: React.FC = () => {
                 else if (bottomType === 'jeans') bottomsPrompt = "wearing blue denim jeans.";
                 else bottomsPrompt = "wearing short shorts, showing bare legs.";
 
-                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and ${bottomsPrompt} ${socksPrompt} The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
+                let skinPrompt = "";
+                if (skinTone === 'white') skinPrompt = "The person has clean, fair white skin.";
+                else if (skinTone === 'whiteHairy') skinPrompt = "The person has fair white skin with thin, natural leg hair (bulu tipis).";
+                else if (skinTone === 'brown') skinPrompt = "The person has a natural brown or tan skin tone (sawo matang).";
+
+                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and ${bottomsPrompt} ${socksPrompt} ${skinPrompt} The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
 
                 const res = await generateSinglePhotoshootImage(
                     currentSource,
@@ -396,6 +402,30 @@ export const GoSetupV3: React.FC = () => {
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
                             step={6} 
+                            title={t('goSetupV3.sections.skinTone.title')}
+                            description={t('goSetupV3.sections.skinTone.description')}
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                            {(['white', 'whiteHairy', 'brown'] as const).map((type) => (
+                                <button 
+                                    key={type}
+                                    onClick={() => setSkinTone(type)} 
+                                    disabled={isGenerating}
+                                    className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
+                                        skinTone === type 
+                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
+                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <span className="text-sm font-bold">{t(`goSetupV3.skinToneOptions.${type}`)}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
+                        <StepHeader 
+                            step={7} 
                             title={t('goSetupV3.sections.motion.title')}
                             description={t('goSetupV3.sections.motion.description')}
                         />

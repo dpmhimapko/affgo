@@ -1183,6 +1183,10 @@ export const translations: Translations = {
       bottoms: {
         title: "Pilih Bawahan",
         description: "Pilih jenis celana atau bawahan yang dipakai model."
+      },
+      skinTone: {
+        title: "Pilih Warna Kulit",
+        description: "Sesuaikan warna kulit model."
       }
     },
     socksOptions: {
@@ -1196,6 +1200,11 @@ export const translations: Translations = {
       longLeggings: "Legging Panjang",
       jeans: "Celana Jeans",
       bareLegs: "Celana Pendek/Bare"
+    },
+    skinToneOptions: {
+      white: "Putih Bersih",
+      whiteHairy: "Putih + Bulu Tipis",
+      brown: "Coklat/Sawo Matang"
     },
     motions: {
       slowZoom: "Zoom Lambat",
