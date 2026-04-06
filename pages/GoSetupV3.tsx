@@ -13,7 +13,7 @@ import { PromoCard } from '../components/PromoCard';
 import { auth, saveToHistory } from '../firebase';
 
 type AspectRatio = '1:1' | '3:4' | '9:16' | '16:9';
-type Vibe = 'pink' | 'blue' | 'white' | 'brown' | 'purple' | 'green' | 'black' | 'aesthetic';
+type Vibe = 'pink' | 'blue' | 'white' | 'brown' | 'purple' | 'green' | 'black' | 'aesthetic' | 'greyCarpet';
 type Motion = 'slowZoom' | 'orbit' | 'topDown' | 'stillLife';
 
 const VIBE_OPTIONS: { id: Vibe; nameKey: string; color: string; prompt: string; }[] = [
@@ -64,6 +64,12 @@ const VIBE_OPTIONS: { id: Vibe; nameKey: string; color: string; prompt: string; 
         nameKey: 'goSetup.vibes.aesthetic', 
         color: 'bg-orange-100',
         prompt: 'Warm and soft aesthetic minimalist desk decoration. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall warm, calm, and Instagramable aesthetic.' 
+    },
+    { 
+        id: 'greyCarpet', 
+        nameKey: 'goSetup.vibes.greyCarpet', 
+        color: 'bg-gray-400',
+        prompt: 'Cozy and aesthetic setting with a soft grey furry carpet (karpet bulu abu-abu) on the floor. The texture of the carpet is thick and plush. The lighting is soft and warm, creating a comfortable and high-end photoshoot atmosphere.' 
     }
 ];
 
@@ -141,7 +147,7 @@ export const GoSetupV3: React.FC = () => {
 
         const selectedVibe = VIBE_OPTIONS.find(v => v.id === vibe);
         const selectedMotion = MOTION_OPTIONS.find(m => m.id === motion);
-        const negativePrompt = " Ensure there is absolutely no text, writing, words, numbers, or watermarks in the final image. No stickers, high fidelity textures. NO HANDS, NO FINGERS. Only feet wearing the shoes.";
+        const negativePrompt = "sexy, revealing clothing, bare skin, short skirts, shorts, crossed legs, crossing legs, Ensure there is absolutely no text, writing, words, numbers, or watermarks in the final image. No stickers, high fidelity textures. NO HANDS, NO FINGERS. Only feet wearing the shoes.";
 
         for (let i = 0; i < 4; i++) {
             setResults(prev => {
@@ -155,7 +161,7 @@ export const GoSetupV3: React.FC = () => {
                 const sourceIdx = i % sourceImages.length;
                 const currentSource = sourceImages[sourceIdx];
 
-                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person (feet only visible). The camera is focused sharply on the shoes. The person is standing or sitting in an aesthetic environment. The EXACT shoes from the source image are the absolute central focus. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the shoes' surfaces, making them look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
+                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and wearing modest black pants or leggings. The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
 
                 const res = await generateSinglePhotoshootImage(
                     currentSource,

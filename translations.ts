@@ -1109,7 +1109,8 @@ export const translations: Translations = {
       purple: "Purple Galaxy",
       green: "Natural Green",
       black: "Dark Stealth",
-      aesthetic: "Warm Aesthetic"
+      aesthetic: "Warm Aesthetic",
+      greyCarpet: "Karpet Bulu Abu"
     },
     handOptions: {
       one: "1 Tangan",
