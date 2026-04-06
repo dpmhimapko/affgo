@@ -1177,13 +1177,25 @@ export const translations: Translations = {
         description: "Pilih jenis gerakan untuk prompt video."
       },
       socks: {
-        title: "Gunakan Kaos Kaki",
-        description: "Pilih apakah model menggunakan kaos kaki atau tidak."
+        title: "Pilih Kaos Kaki",
+        description: "Pilih warna kaos kaki atau tanpa kaos kaki."
+      },
+      bottoms: {
+        title: "Pilih Bawahan",
+        description: "Pilih jenis celana atau bawahan yang dipakai model."
       }
     },
     socksOptions: {
-      yes: "Pakai Kaos Kaki",
-      no: "Tanpa Kaos Kaki"
+      black: "Kaos Kaki Hitam",
+      white: "Kaos Kaki Putih",
+      matching: "Warna Sepatu",
+      none: "Tanpa Kaos Kaki"
+    },
+    bottomOptions: {
+      shortLeggings: "Legging Pendek",
+      longLeggings: "Legging Panjang",
+      jeans: "Celana Jeans",
+      bareLegs: "Celana Pendek/Bare"
     },
     motions: {
       slowZoom: "Zoom Lambat",

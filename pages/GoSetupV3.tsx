@@ -96,7 +96,8 @@ export const GoSetupV3: React.FC = () => {
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('9:16');
     const [vibe, setVibe] = useState<Vibe>('aesthetic');
     const [motion, setMotion] = useState<Motion>('slowZoom');
-    const [useSocks, setUseSocks] = useState<boolean>(false);
+    const [socksType, setSocksType] = useState<'none' | 'black' | 'white' | 'matching'>('none');
+    const [bottomType, setBottomType] = useState<'shortLeggings' | 'longLeggings' | 'jeans' | 'bareLegs'>('longLeggings');
     const [copiedId, setCopiedId] = useState<number | null>(null);
     
     const [results, setResults] = useState<PhotoshootResult[] | null>(null);
@@ -162,8 +163,19 @@ export const GoSetupV3: React.FC = () => {
                 const sourceIdx = i % sourceImages.length;
                 const currentSource = sourceImages[sourceIdx];
 
-                const socksPrompt = useSocks ? "The person is wearing socks that perfectly match the color and style of the shoes." : "The person is not wearing socks, showing bare ankles.";
-                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and wearing modest black pants or leggings. ${socksPrompt} The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
+                let socksPrompt = "";
+                if (socksType === 'black') socksPrompt = "The person is wearing black socks.";
+                else if (socksType === 'white') socksPrompt = "The person is wearing white socks.";
+                else if (socksType === 'matching') socksPrompt = "The person is wearing socks that perfectly match the color and style of the shoes.";
+                else socksPrompt = "The person is not wearing socks, showing bare ankles.";
+
+                let bottomsPrompt = "";
+                if (bottomType === 'shortLeggings') bottomsPrompt = "wearing short black leggings.";
+                else if (bottomType === 'longLeggings') bottomsPrompt = "wearing long black leggings.";
+                else if (bottomType === 'jeans') bottomsPrompt = "wearing blue denim jeans.";
+                else bottomsPrompt = "wearing short shorts, showing bare legs.";
+
+                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and ${bottomsPrompt} ${socksPrompt} The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
 
                 const res = await generateSinglePhotoshootImage(
                     currentSource,
@@ -336,40 +348,54 @@ export const GoSetupV3: React.FC = () => {
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
                             step={4} 
-                            title={t('goSetupV3.sections.socks.title')}
-                            description={t('goSetupV3.sections.socks.description')}
+                            title={t('goSetupV3.sections.bottoms.title')}
+                            description={t('goSetupV3.sections.bottoms.description')}
                         />
                         <div className="grid grid-cols-2 gap-2">
-                            <button 
-                                onClick={() => setUseSocks(true)} 
-                                disabled={isGenerating}
-                                className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
-                                    useSocks === true 
-                                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
-                                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
-                                } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                                <CheckIcon className="w-4 h-4" />
-                                <span className="text-sm font-bold">{t('goSetupV3.socksOptions.yes')}</span>
-                            </button>
-                            <button 
-                                onClick={() => setUseSocks(false)} 
-                                disabled={isGenerating}
-                                className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
-                                    useSocks === false 
-                                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
-                                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
-                                } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                                <CloseIcon className="w-4 h-4" />
-                                <span className="text-sm font-bold">{t('goSetupV3.socksOptions.no')}</span>
-                            </button>
+                            {(['shortLeggings', 'longLeggings', 'jeans', 'bareLegs'] as const).map((type) => (
+                                <button 
+                                    key={type}
+                                    onClick={() => setBottomType(type)} 
+                                    disabled={isGenerating}
+                                    className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
+                                        bottomType === type 
+                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
+                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <span className="text-sm font-bold">{t(`goSetupV3.bottomOptions.${type}`)}</span>
+                                </button>
+                            ))}
                         </div>
                     </div>
 
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
                             step={5} 
+                            title={t('goSetupV3.sections.socks.title')}
+                            description={t('goSetupV3.sections.socks.description')}
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                            {(['black', 'white', 'matching', 'none'] as const).map((type) => (
+                                <button 
+                                    key={type}
+                                    onClick={() => setSocksType(type)} 
+                                    disabled={isGenerating}
+                                    className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
+                                        socksType === type 
+                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
+                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <span className="text-sm font-bold">{t(`goSetupV3.socksOptions.${type}`)}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
+                        <StepHeader 
+                            step={6} 
                             title={t('goSetupV3.sections.motion.title')}
                             description={t('goSetupV3.sections.motion.description')}
                         />
