@@ -1175,7 +1175,15 @@ export const translations: Translations = {
       motion: {
         title: "Gerakan Video",
         description: "Pilih jenis gerakan untuk prompt video."
+      },
+      socks: {
+        title: "Gunakan Kaos Kaki",
+        description: "Pilih apakah model menggunakan kaos kaki atau tidak."
       }
+    },
+    socksOptions: {
+      yes: "Pakai Kaos Kaki",
+      no: "Tanpa Kaos Kaki"
     },
     motions: {
       slowZoom: "Zoom Lambat",
