@@ -60,6 +60,8 @@ export const translations: Translations = {
     goSepatu: "Go Sepatu",
     goSepatuV2: "Go Sepatu v2",
     goSetup: "Go Setup",
+    goSetupV2: "Go Setup v2",
+    goSetupV3: "Go Setup v3",
     settings: "API Key",
   },
   settings: {
@@ -1158,6 +1160,29 @@ export const translations: Translations = {
       stillLife: "Diam Estetik"
     },
     generateButton: "Buat Foto Setup V2"
+  },
+  goSetupV3: {
+    page: {
+      title: "Go Setup V3 (Shoes)",
+      description: "Pindahkan produk sepatu Anda ke model yang sedang memakainya dalam setting setup estetik. Fokus pada detail sepatu dengan berbagai pilihan vibe warna."
+    },
+    sections: {
+      vibe: {
+        title: "Pilih Vibe Warna",
+        description: "Sesuaikan suasana warna setup dengan produkmu."
+      },
+      motion: {
+        title: "Gerakan Video",
+        description: "Pilih jenis gerakan untuk prompt video."
+      }
+    },
+    motions: {
+      slowZoom: "Zoom Lambat",
+      orbit: "Orbit Kamera",
+      topDown: "Top Down Cinematic",
+      stillLife: "Diam Estetik"
+    },
+    generateButton: "Buat Foto Setup V3"
   },
   goModelPremium: {
     page: {
