@@ -99,6 +99,8 @@ export const GoSetupV3: React.FC = () => {
     const [socksType, setSocksType] = useState<'none' | 'black' | 'white' | 'matching'>('none');
     const [bottomType, setBottomType] = useState<'shortLeggings' | 'longLeggings' | 'jeans' | 'bareLegs'>('longLeggings');
     const [skinTone, setSkinTone] = useState<'white' | 'whiteHairy' | 'brown'>('white');
+    const [gender, setGender] = useState<'female' | 'male'>('female');
+    const [nailPolish, setNailPolish] = useState<'none' | 'red' | 'pink' | 'black' | 'white' | 'nude'>('none');
     const [copiedId, setCopiedId] = useState<number | null>(null);
     
     const [results, setResults] = useState<PhotoshootResult[] | null>(null);
@@ -181,7 +183,16 @@ export const GoSetupV3: React.FC = () => {
                 else if (skinTone === 'whiteHairy') skinPrompt = "The person has fair white skin with thin, natural leg hair (bulu tipis).";
                 else if (skinTone === 'brown') skinPrompt = "The person has a natural brown or tan skin tone (sawo matang).";
 
-                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and ${bottomsPrompt} ${socksPrompt} ${skinPrompt} The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
+                const genderPrompt = gender === 'female' ? "The person is a female with feminine legs." : "The person is a male with masculine legs.";
+                
+                let nailPrompt = "";
+                if (nailPolish === 'none') {
+                    nailPrompt = "The toenails are clean, natural, and white, NOT black or dark.";
+                } else {
+                    nailPrompt = `The toenails are painted with a beautiful ${nailPolish} nail polish.`;
+                }
+
+                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and ${bottomsPrompt} ${socksPrompt} ${skinPrompt} ${genderPrompt} ${nailPrompt} The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
 
                 const res = await generateSinglePhotoshootImage(
                     currentSource,
@@ -426,6 +437,54 @@ export const GoSetupV3: React.FC = () => {
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
                             step={7} 
+                            title={t('goSetupV3.sections.gender.title')}
+                            description={t('goSetupV3.sections.gender.description')}
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                            {(['female', 'male'] as const).map((type) => (
+                                <button 
+                                    key={type}
+                                    onClick={() => setGender(type)} 
+                                    disabled={isGenerating}
+                                    className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
+                                        gender === type 
+                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
+                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <span className="text-sm font-bold">{t(`goSetupV3.genderOptions.${type}`)}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
+                        <StepHeader 
+                            step={8} 
+                            title={t('goSetupV3.sections.nailPolish.title')}
+                            description={t('goSetupV3.sections.nailPolish.description')}
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                            {(['none', 'red', 'pink', 'black', 'white', 'nude'] as const).map((type) => (
+                                <button 
+                                    key={type}
+                                    onClick={() => setNailPolish(type)} 
+                                    disabled={isGenerating}
+                                    className={`p-3 rounded-xl flex items-center justify-center gap-2 border transition-all ${
+                                        nailPolish === type 
+                                        ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 border-indigo-500 dark:text-indigo-300 shadow-sm' 
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-indigo-300'
+                                    } ${isGenerating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <span className="text-sm font-bold">{t(`goSetupV3.nailPolishOptions.${type}`)}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
+                        <StepHeader 
+                            step={9} 
                             title={t('goSetupV3.sections.motion.title')}
                             description={t('goSetupV3.sections.motion.description')}
                         />

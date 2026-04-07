@@ -1187,6 +1187,14 @@ export const translations: Translations = {
       skinTone: {
         title: "Pilih Warna Kulit",
         description: "Sesuaikan warna kulit model."
+      },
+      gender: {
+        title: "Pilih Gender",
+        description: "Pilih gender kaki model."
+      },
+      nailPolish: {
+        title: "Pilih Warna Kutek",
+        description: "Pilih warna kutek pada kuku kaki model."
       }
     },
     socksOptions: {
@@ -1205,6 +1213,18 @@ export const translations: Translations = {
       white: "Putih Bersih",
       whiteHairy: "Putih + Bulu Tipis",
       brown: "Coklat/Sawo Matang"
+    },
+    genderOptions: {
+      female: "Wanita",
+      male: "Pria"
+    },
+    nailPolishOptions: {
+      none: "Tanpa Kutek",
+      red: "Merah",
+      pink: "Pink",
+      black: "Hitam",
+      white: "Putih",
+      nude: "Nude"
     },
     motions: {
       slowZoom: "Zoom Lambat",
