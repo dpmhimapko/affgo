@@ -1219,7 +1219,7 @@ export const translations: Translations = {
       male: "Pria"
     },
     nailPolishOptions: {
-      none: "Tanpa Kutek",
+      none: "Natural / Bening",
       red: "Merah",
       pink: "Pink",
       black: "Hitam",

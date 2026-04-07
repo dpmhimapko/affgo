@@ -187,7 +187,7 @@ export const GoSetupV3: React.FC = () => {
                 
                 let nailPrompt = "";
                 if (nailPolish === 'none') {
-                    nailPrompt = "The toenails are clean, natural, and white, NOT black or dark.";
+                    nailPrompt = "The toenails are natural, clean, and clear (bening), with a healthy natural shine, NOT painted with any color. They should look completely natural and well-groomed.";
                 } else {
                     nailPrompt = `The toenails are painted with a beautiful ${nailPolish} nail polish.`;
                 }
