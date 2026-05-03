@@ -15,5 +15,5 @@ export function useApiKey() {
 // Static helper for non-hook usage (like in services)
 export function getEffectiveApiKey() {
   const stored = typeof window !== 'undefined' ? localStorage.getItem('gemini_api_key') : null;
-  return stored || process.env.API_KEY || '';
+  return stored || process.env.GEMINI_API_KEY || '';
 }

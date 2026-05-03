@@ -8,7 +8,7 @@ import { ImageUploader } from '../components/ImageUploader';
 import { Spinner } from '../components/Spinner';
 import { UploadedImage } from '../types';
 import { generateSinglePhotoshootImage } from '../services/geminiService';
-import { Download as DownloadIcon, Eye as ZoomIcon, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, RefreshCw, Clock, Image as ImageIcon, Hand, Users, Copy as CopyIcon, Check as CheckIcon } from '../components/icons/LucideIcons';
+import { Download as DownloadIcon, Eye as ZoomIcon, Square as SquareIcon, RectangleHorizontal as RectangleHorizontalIcon, RectangleVertical as RectangleVerticalIcon, RefreshCw, Clock, Image as ImageIcon, Hand, Users, Copy as CopyIcon, Check as CheckIcon, X as CloseIcon, FileText } from '../components/icons/LucideIcons';
 import { ZoomModal } from '../components/ZoomModal';
 import { PromoCard } from '../components/PromoCard';
 import { auth, saveToHistory } from '../firebase';
@@ -66,7 +66,7 @@ const VIBE_OPTIONS: { id: Vibe; nameKey: string; color: string; prompt: string; 
         id: 'aesthetic', 
         nameKey: 'goSetup.vibes.aesthetic', 
         color: 'bg-orange-100',
-        prompt: 'Warm and soft aesthetic minimalist desk decoration. Center: pleated cream table lamp emitting warm yellow light, creating a cozy atmosphere. Right of lamp: transparent glass vase with three white tulips. Front of lamp: white bubble candle on a small round wooden base. Left: small photo frame on a mini wooden easel. Bottom right: small pink glass container with lid. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall warm, calm, and Instagramable aesthetic.' 
+        prompt: 'Warm and soft aesthetic minimalist desk decoration. Center: pleated cream table lamp emitting a very bright, glowing, and intense warm yellow light. CRITICAL: The overall scene and room lighting MUST be bright white, clear, and professional, NOT yellow; the warm yellow light should only glow from the lamp itself. Right of lamp: transparent glass vase with three white tulips. Front of lamp: white bubble candle on a small round wooden base. Left: a clearly visible aesthetic poster with a beautiful artistic design in a small gold photo frame standing on a mini wooden easel. Bottom right: small pink glass container with lid. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall bright, clean, and Instagramable aesthetic.' 
     }
 ];
 
@@ -90,13 +90,13 @@ export const GoSetup: React.FC = () => {
     const { t } = useLanguage();
     const { incrementUsage } = useUsage();
     
-    const [sourceImage, setSourceImage] = useState<UploadedImage | null>(null);
-    const [secondImage, setSecondImage] = useState<UploadedImage | null>(null);
+    const [sourceImages, setSourceImages] = useState<UploadedImage[]>([]);
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>('9:16');
     const [vibe, setVibe] = useState<Vibe>('blue');
     const [handCount, setHandCount] = useState<HandCount>('1');
     const [gender, setGender] = useState<Gender>('female');
     const [motion, setMotion] = useState<Motion>('subtleWiggle');
+    const [brief, setBrief] = useState('');
     const [copiedId, setCopiedId] = useState<number | null>(null);
     
     const [results, setResults] = useState<PhotoshootResult[] | null>(null);
@@ -107,30 +107,26 @@ export const GoSetup: React.FC = () => {
     const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
     const [zoomImage, setZoomImage] = useState<string | null>(null);
 
-    const handleImageUpload = (dataUrl: string, mimeType: string) => {
+    const handleImageUpload = (index: number, dataUrl: string, mimeType: string) => {
         const base64 = dataUrl.split(',')[1];
-        setSourceImage({ base64, mimeType, name: 'source' });
+        const newImages = [...sourceImages];
+        newImages[index] = { base64, mimeType, name: `source-${index}` };
+        setSourceImages(newImages);
         setResults(null);
         setError(null);
         setProgress(0);
     };
 
-    const handleSecondImageUpload = (dataUrl: string, mimeType: string) => {
-        const base64 = dataUrl.split(',')[1];
-        setSecondImage({ base64, mimeType, name: 'second' });
+    const removeImage = (index: number) => {
+        const newImages = [...sourceImages];
+        newImages.splice(index, 1);
+        setSourceImages(newImages.filter(img => img !== undefined));
         setResults(null);
-        setError(null);
-        setProgress(0);
     };
 
     const handleGenerate = async () => {
-        if (!sourceImage) {
+        if (sourceImages.length === 0) {
             setError(t('goAesthetic.errors.noImage'));
-            return;
-        }
-
-        if (handCount === 'compare' && !secondImage) {
-            setError("Silakan upload produk kedua untuk perbandingan.");
             return;
         }
 
@@ -157,7 +153,6 @@ export const GoSetup: React.FC = () => {
             });
 
             try {
-                const handText = handCount === '1' ? 'one hand' : handCount === '2' ? 'two hands' : 'two hands, one in each hand';
                 const personText = gender === 'female' ? 'a woman' : 'a man';
                 const clothingText = vibe === 'blue' ? 'a blue knitted sweater' : 
                                     vibe === 'pink' ? 'a pink knitted sweater' : 
@@ -168,14 +163,21 @@ export const GoSetup: React.FC = () => {
                                     vibe === 'aesthetic' ? 'a cream-colored soft knitted sweater' : 'a black techwear sleeve';
 
                 let fullPrompt = "";
-                if (handCount === 'compare') {
-                    fullPrompt = `ULTRA-REALISTIC CLOSE-UP POV PRODUCT COMPARISON PHOTOGRAPHY: The camera angle is a close-up shot from a slightly angled front view, positioned at eye-level. Two different products from the source images are being compared. One product is held in the left hand and the other product is held in the right hand of ${personText} wearing ${clothingText}. CRITICAL: The hands MUST enter the frame from the bottom-center, creating a true first-person POV perspective. Both products fill a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
-                } else {
-                    fullPrompt = `ULTRA-REALISTIC CLOSE-UP POV PRODUCT PHOTOGRAPHY: The camera angle is a close-up shot from a slightly angled front view, positioned at eye-level or slightly higher with a minor top-down angle. The EXACT product from the source image is the absolute central focus, held by ${handText} of ${personText} wearing ${clothingText}. CRITICAL: The hands MUST enter the frame strictly from the bottom-center and front of the image, creating a true first-person POV perspective. DO NOT have hands entering from the left or right sides. The product fills a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the product's surfaces, making it look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
+                const productCount = sourceImages.length;
+
+                if (productCount === 1) {
+                    const handText = handCount === '1' ? 'one hand' : 'two hands';
+                    fullPrompt = `ULTRA-REALISTIC CLOSE-UP POV PRODUCT PHOTOGRAPHY: The camera angle is a close-up shot from a slightly angled front view, positioned at eye-level or slightly higher with a minor top-down angle. The EXACT product from the source image is the absolute central focus, positioned precisely in the center of the frame. The product is held by ${handText} of ${personText} wearing ${clothingText}. CRITICAL: The hands MUST enter the frame strictly from the bottom-center and front of the image, lifting the product up to the center of the screen to create a true first-person POV perspective. DO NOT have hands entering from the left or right sides. The product fills a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the product's surfaces, making it look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). ${brief ? `ADDITIONAL USER REQUEST: ${brief}` : ''} 8k resolution, professional commercial photography. ${negativePrompt}`;
+                } else if (productCount === 2) {
+                    fullPrompt = `ULTRA-REALISTIC CLOSE-UP POV PRODUCT COMPARISON PHOTOGRAPHY: The camera angle is a close-up shot from a slightly angled front view, positioned at eye-level. Two different products from the source images are being compared. One product is held in the left hand and the other product is held in the right hand of ${personText} wearing ${clothingText}. CRITICAL: The products MUST be positioned in the center of the frame. The hands MUST enter the frame from the bottom-center, lifting the products up to the center to create a true first-person POV perspective. Both products fill a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). ${brief ? `ADDITIONAL USER REQUEST: ${brief}` : ''} 8k resolution, professional commercial photography. ${negativePrompt}`;
+                } else if (productCount === 3) {
+                    fullPrompt = `ULTRA-REALISTIC CLOSE-UP POV PRODUCT PHOTOGRAPHY: A first-person POV shot of ${personText} wearing ${clothingText}. Two products are held in the hands (one in left, one in right) and lifted to the center of the frame. A THIRD product from the source images is placed neatly on the table in the background, positioned slightly behind and between the hands, clearly visible. The camera is focused on the products in the hands. The lighting is EXTREMELY BRIGHT AND VIBRANT. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). ${brief ? `ADDITIONAL USER REQUEST: ${brief}` : ''} 8k resolution, professional commercial photography. ${negativePrompt}`;
+                } else if (productCount === 4) {
+                    fullPrompt = `ULTRA-REALISTIC CLOSE-UP POV PRODUCT PHOTOGRAPHY: A first-person POV shot of ${personText} wearing ${clothingText}. Two products are held in the hands (one in left, one in right) and lifted to the center of the frame. TWO ADDITIONAL products from the source images are placed neatly on the table in the background, one on the left and one on the right behind the hands, both clearly visible. The camera is focused on the products in the hands. The lighting is EXTREMELY BRIGHT AND VIBRANT. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). ${brief ? `ADDITIONAL USER REQUEST: ${brief}` : ''} 8k resolution, professional commercial photography. ${negativePrompt}`;
                 }
 
                 const res = await generateSinglePhotoshootImage(
-                    handCount === 'compare' ? [sourceImage, secondImage!] : sourceImage,
+                    sourceImages,
                     fullPrompt,
                     "",
                     aspectRatio
@@ -238,8 +240,8 @@ export const GoSetup: React.FC = () => {
     };
 
     const handleReset = () => {
-        setSourceImage(null);
-        setSecondImage(null);
+        setSourceImages([]);
+        setBrief('');
         setResults(null);
         setError(null);
         setIsGenerating(false);
@@ -266,35 +268,33 @@ export const GoSetup: React.FC = () => {
             <div className="flex flex-col lg:flex-row gap-8 items-start">
                 <aside className="w-full lg:w-[400px] flex-shrink-0 lg:sticky lg:top-8 space-y-6 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
                     
-                    <div>
+                    <div className="space-y-4">
                         <StepHeader 
                             step={1} 
                             title={t('sections.upload.title')}
-                            description={handCount === 'compare' ? "Upload Produk 1" : t('uploader.productLabel')}
+                            description="Upload hingga 4 produk. 2 akan dipegang, sisanya di meja."
                         />
-                        <ImageUploader 
-                            onImageUpload={handleImageUpload}
-                            uploadedImage={sourceImage ? `data:${sourceImage.mimeType};base64,${sourceImage.base64}` : null}
-                            label={t('uploader.imageLabel')}
-                            labelKey="uploader.productLabel"
-                        />
-                    </div>
-
-                    {handCount === 'compare' && (
-                        <div className="pt-4">
-                            <StepHeader 
-                                step={1} 
-                                title="Upload Produk 2"
-                                description="Produk kedua untuk dibandingkan."
-                            />
-                            <ImageUploader 
-                                onImageUpload={handleSecondImageUpload}
-                                uploadedImage={secondImage ? `data:${secondImage.mimeType};base64,${secondImage.base64}` : null}
-                                label={t('uploader.imageLabel')}
-                                labelKey="uploader.productLabel"
-                            />
+                        <div className="grid grid-cols-2 gap-3">
+                            {[0, 1, 2, 3].map((idx) => (
+                                <div key={idx} className="relative">
+                                    <ImageUploader 
+                                        onImageUpload={(dataUrl, mimeType) => handleImageUpload(idx, dataUrl, mimeType)}
+                                        uploadedImage={sourceImages[idx] ? `data:${sourceImages[idx].mimeType};base64,${sourceImages[idx].base64}` : null}
+                                        label={`Produk ${idx + 1}`}
+                                        compact={true}
+                                    />
+                                    {sourceImages[idx] && (
+                                        <button 
+                                            onClick={() => removeImage(idx)}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-lg hover:bg-red-600 transition-colors"
+                                        >
+                                            <CloseIcon className="w-3 h-3" />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-                    )}
+                    </div>
 
                     <div className="pt-6 border-t border-gray-100 dark:border-white/10">
                         <StepHeader 
@@ -421,10 +421,40 @@ export const GoSetup: React.FC = () => {
                         </div>
                     </div>
 
+                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
+                        <StepHeader 
+                            step={7} 
+                            title="Briefing Tambahan"
+                            description="Tulis permintaan khusus Anda di sini."
+                        />
+                        <textarea
+                            value={brief}
+                            onChange={(e) => setBrief(e.target.value)}
+                            placeholder="Contoh: Tambahkan hiasan bunga mawar di meja, atau buat pencahayaan lebih redup..."
+                            disabled={isGenerating}
+                            className="w-full h-24 p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-sm text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                        />
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-100 dark:border-white/10">
+                        <StepHeader 
+                            step={7} 
+                            title="Briefing Tambahan"
+                            description="Tulis permintaan khusus Anda di sini."
+                        />
+                        <textarea
+                            value={brief}
+                            onChange={(e) => setBrief(e.target.value)}
+                            placeholder="Contoh: Tambahkan hiasan bunga mawar di meja, atau buat pencahayaan lebih redup..."
+                            disabled={isGenerating}
+                            className="w-full h-24 p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-sm text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                        />
+                    </div>
+
                     <div className="pt-4">
                         <button
                             onClick={handleGenerate}
-                            disabled={isGenerating || !sourceImage}
+                            disabled={isGenerating || sourceImages.length === 0}
                             className="w-full group relative flex justify-center items-center py-4 px-6 rounded-2xl text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-300 transform hover:-translate-y-0.5 overflow-hidden"
                         >
                             {isGenerating ? (

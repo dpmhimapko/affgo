@@ -4,7 +4,7 @@ import type { View } from '../../App';
 import { TryOnIcon } from '../icons/TryOnIcon';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { SparklesIcon } from '../icons/SparklesIcon';
-import { useApiKey } from '../../hooks/useApiKey';
+import { useUser } from '../../contexts/UserContext';
 import { X, Users, Smile, ShieldCheck, Eraser, ScanFace, Monitor, Info, Key, Settings as SettingsIcon, Clock, Lock } from '../icons/LucideIcons';
 import { HomeIcon } from '../icons/HomeIcon';
 import { MirrorIcon } from '../icons/MirrorIcon';
@@ -46,7 +46,7 @@ const NavItem: React.FC<{
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isMobileOpen, onMobileClose, isAdmin }) => {
     const { t } = useLanguage();
-    const { isConfigured } = useApiKey();
+    const { isApproved } = useUser();
     
     const menuGroups = [
       ...(isAdmin ? [{
@@ -60,7 +60,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isM
         items: [
           { id: 'home', label: t('sidebar.home'), icon: <HomeIcon /> },
           { id: 'featureGuide', label: "Panduan Fitur", icon: <Info /> },
-          { id: 'settings', label: t('sidebar.settings'), icon: <Key /> },
         ]
       },
       {
@@ -125,7 +124,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, isM
                                     icon={item.icon}
                                     label={item.label}
                                     isActive={activeView === item.id}
-                                    isLocked={!isConfigured && !['home', 'featureGuide', 'settings', 'adminDashboard'].includes(item.id)}
+                                    isLocked={!isApproved && !['home', 'featureGuide', 'adminDashboard'].includes(item.id)}
                                     onClick={() => handleNavItemClick(item.id as View)}
                                 />
                             ))}

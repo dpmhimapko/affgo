@@ -27,7 +27,7 @@ export const ApiKeyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setApiKey(null);
   };
 
-  const effectiveApiKey = apiKey || process.env.API_KEY || '';
+  const effectiveApiKey = apiKey || process.env.GEMINI_API_KEY || '';
   const isConfigured = !!effectiveApiKey;
 
   return (

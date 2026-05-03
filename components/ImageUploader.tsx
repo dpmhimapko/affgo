@@ -8,8 +8,9 @@ declare const heic2any: any;
 interface ImageUploaderProps {
   onImageUpload: (dataUrl: string, mimeType: string) => void;
   uploadedImage: string | null;
-  label: string; 
-  labelKey: string;
+  label?: string; 
+  labelKey?: string;
+  compact?: boolean;
 }
 
 const convertHeicToJpg = async (file: File): Promise<File> => {
@@ -26,7 +27,7 @@ const convertHeicToJpg = async (file: File): Promise<File> => {
   return file;
 };
 
-export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, uploadedImage, labelKey }) => {
+export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, uploadedImage, label, labelKey, compact }) => {
   const [isDragging, setIsDragging] = useState(false);
   const { t } = useLanguage();
 
@@ -45,7 +46,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, upl
   return (
     <div className="w-full">
       <label
-        className={`relative block w-full aspect-video rounded-[2rem] border-4 border-dashed transition-all cursor-pointer overflow-hidden
+        className={`relative block w-full ${compact ? 'aspect-square rounded-2xl' : 'aspect-video rounded-[2rem]'} border-4 border-dashed transition-all cursor-pointer overflow-hidden
         ${isDragging 
             ? 'border-cartoon-blue bg-cartoon-yellow/20 scale-[1.02]' 
             : 'border-cartoon-dark bg-white hover:border-cartoon-blue hover:bg-cartoon-yellow/5 shadow-cartoon-lg hover:shadow-cartoon'
@@ -55,19 +56,19 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, upl
         onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFileChange(e.dataTransfer.files); }}
       >
         {uploadedImage ? (
-          <div className="w-full h-full relative p-4">
-            <img src={uploadedImage} alt="preview" className="object-contain w-full h-full rounded-2xl border-2 border-cartoon-dark" />
+          <div className="w-full h-full relative p-2">
+            <img src={uploadedImage} alt="preview" className="object-contain w-full h-full rounded-xl border-2 border-cartoon-dark" />
             <div className="absolute inset-0 flex items-center justify-center bg-cartoon-dark/20 opacity-0 hover:opacity-100 transition-opacity">
-                <div className="bg-cartoon-yellow border-2 border-cartoon-dark px-4 py-2 rounded-full shadow-cartoon font-black text-xs uppercase">Ganti Foto</div>
+                <div className="bg-cartoon-yellow border-2 border-cartoon-dark px-3 py-1 rounded-full shadow-cartoon font-black text-[10px] uppercase">Ganti</div>
             </div>
           </div>
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-            <div className="p-3 rounded-2xl bg-cartoon-yellow border-2 border-cartoon-dark shadow-cartoon mb-3">
-                <UploadIcon className="h-6 w-6 text-cartoon-dark" />
+          <div className={`absolute inset-0 flex flex-col items-center justify-center ${compact ? 'p-2' : 'p-6'} text-center`}>
+            <div className={`${compact ? 'p-1.5 mb-1' : 'p-3 mb-3'} rounded-2xl bg-cartoon-yellow border-2 border-cartoon-dark shadow-cartoon`}>
+                <UploadIcon className={`${compact ? 'h-4 w-4' : 'h-6 w-6'} text-cartoon-dark`} />
             </div>
-            <p className="font-black text-cartoon-dark uppercase text-xs">{t(labelKey)}</p>
-            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">PNG, JPG (Maks 10MB)</p>
+            <p className={`font-black text-cartoon-dark uppercase ${compact ? 'text-[8px]' : 'text-xs'}`}>{label || (labelKey ? t(labelKey) : '')}</p>
+            {!compact && <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">PNG, JPG (Maks 10MB)</p>}
           </div>
         )}
         <input type="file" className="sr-only" onChange={(e) => handleFileChange(e.target.files)} accept="image/*" />

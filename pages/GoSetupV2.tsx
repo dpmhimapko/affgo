@@ -64,7 +64,7 @@ const VIBE_OPTIONS: { id: Vibe; nameKey: string; color: string; prompt: string; 
         id: 'aesthetic', 
         nameKey: 'goSetup.vibes.aesthetic', 
         color: 'bg-orange-100',
-        prompt: 'Warm and soft aesthetic minimalist desk decoration. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall warm, calm, and Instagramable aesthetic.' 
+        prompt: 'Warm and soft aesthetic minimalist desk decoration. Center: pleated cream table lamp emitting a very bright, glowing, and intense warm yellow light. CRITICAL: The overall scene and room lighting MUST be bright white, clear, and professional, NOT yellow; the warm yellow light should only glow from the lamp itself. Right of lamp: transparent glass vase with three white tulips. Front of lamp: white bubble candle on a small round wooden base. Left: a clearly visible aesthetic poster with a beautiful artistic design in a small gold photo frame standing on a mini wooden easel. Bottom right: small pink glass container with lid. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall bright, clean, and Instagramable aesthetic.' 
     }
 ];
 
@@ -165,7 +165,7 @@ export const GoSetupV2: React.FC = () => {
                 const sourceIdx = i % sourceImages.length;
                 const currentSource = sourceImages[sourceIdx];
 
-                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a skincare item from the source image, placed lying down on its back (terlentang) on a clean, aesthetic surface. ${selectedAngle?.prompt} The EXACT product from the source image is the absolute central focus. NO HANDS, NO PEOPLE, NO FINGERS are visible in the frame. The product fills a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the product's surfaces, making it look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
+                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a skincare item from the source image, placed lying down on its back (terlentang) on a clean, aesthetic surface. ${selectedAngle?.prompt} The EXACT product from the source image is the absolute central focus, positioned precisely in the center of the frame. NO HANDS, NO PEOPLE, NO FINGERS are visible in the frame. The product fills a significant portion of the frame with sharp detail. The lighting is EXTREMELY BRIGHT AND VIBRANT, as if illuminated by high-wattage professional studio lamps. The scene features a POWERFUL FRONT KEY LIGHT and a BRILLIANT OVERHEAD TOP-LIGHT that eliminates deep shadows and creates intense, sparkling highlights on the product's surfaces, making it look luminous and crystal clear. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
 
                 const res = await generateSinglePhotoshootImage(
                     currentSource,

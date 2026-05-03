@@ -63,7 +63,7 @@ const VIBE_OPTIONS: { id: Vibe; nameKey: string; color: string; prompt: string; 
         id: 'aesthetic', 
         nameKey: 'goSetup.vibes.aesthetic', 
         color: 'bg-orange-100',
-        prompt: 'Warm and soft aesthetic minimalist desk decoration. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall warm, calm, and Instagramable aesthetic.' 
+        prompt: 'Warm and soft aesthetic minimalist desk decoration. Center: pleated cream table lamp emitting a very bright, glowing, and intense warm yellow light. CRITICAL: The overall scene and room lighting MUST be bright white, clear, and professional, NOT yellow; the warm yellow light should only glow from the lamp itself. Right of lamp: transparent glass vase with three white tulips. Front of lamp: white bubble candle on a small round wooden base. Left: a clearly visible aesthetic poster with a beautiful artistic design in a small gold photo frame standing on a mini wooden easel. Bottom right: small pink glass container with lid. Table surface: white textured fabric with subtle patterns. Background: plain beige/cream wall. Overall bright, clean, and Instagramable aesthetic.' 
     },
     { 
         id: 'greyCarpet', 
@@ -192,7 +192,7 @@ export const GoSetupV3: React.FC = () => {
                     nailPrompt = `The toenails are painted with a beautiful ${nailPolish} nail polish.`;
                 }
 
-                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and ${bottomsPrompt} ${socksPrompt} ${skinPrompt} ${genderPrompt} ${nailPrompt} The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
+                const fullPrompt = `ULTRA-REALISTIC CLOSE-UP PRODUCT PHOTOGRAPHY: The product is a pair of shoes from the source image, being worn by a person who is SITTING DOWN and ${bottomsPrompt} ${socksPrompt} ${skinPrompt} ${genderPrompt} ${nailPrompt} The person's legs are STRAIGHT AND SIDE-BY-SIDE, NOT CROSSED. The feet are positioned naturally on the ground. The camera is focused sharply on the shoes, which are positioned precisely in the center of the frame. The person's legs are positioned naturally while sitting to showcase the shoes perfectly. The EXACT shoes from the source image are the absolute central focus. The lighting is bright, clear, and well-balanced professional studio lighting, ensuring all details of the shoes are visible without any harsh glare, overexposure, or blinding highlights. The background is a ${selectedVibe?.prompt}, and it MUST be HEAVILY blurred with a deep, creamy bokeh effect (shallow depth of field). 8k resolution, professional commercial photography. ${negativePrompt}`;
 
                 const res = await generateSinglePhotoshootImage(
                     currentSource,
